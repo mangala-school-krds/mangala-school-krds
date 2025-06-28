@@ -1,416 +1,22 @@
-// import React, { useState, useEffect } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import axios from 'axios';
-// import './AdminDashboard.css';
-
-// const AdminDashboard = () => {
-//   const [content, setContent] = useState(null);
-//   const [loading, setLoading] = useState(true);
-//   const [saving, setSaving] = useState(false);
-//   const [newEvent, setNewEvent] = useState({ title: '', description: '', date: '' });
-//   const [newGalleryItem, setNewGalleryItem] = useState({ caption: '' });
-//   const [error, setError] = useState('');
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     const token = localStorage.getItem('adminToken');
-//     if (!token) {
-//       navigate('/admin');
-//       return;
-//     }
-
-//     // Set base URL and auth header
-//     axios.defaults.baseURL = 'http://localhost:5000';
-//     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-//     fetchContent();
-//   }, [navigate]);
-
-//   const fetchContent = async () => {
-//     try {
-//       const response = await axios.get('/api/content');
-//       setContent(response.data);
-//       setLoading(false);
-//     } catch (error) {
-//       console.error('Error fetching content:', error);
-//       if (error.code === 'ERR_NETWORK') {
-//         setError('Cannot connect to server. Please make sure the backend is running on port 5000.');
-//       } else if (error.response?.status === 401) {
-//         localStorage.removeItem('adminToken');
-//         navigate('/admin');
-//       } else {
-//         setError('Failed to load content');
-//       }
-//       setLoading(false);
-//     }
-//   };
-
-//   const handleContentUpdate = async (field, value) => {
-//     setSaving(true);
-//     try {
-//       const updatedContent = { ...content, [field]: value };
-//       await axios.put('/api/content', updatedContent);
-//       setContent(updatedContent);
-//     } catch (error) {
-//       console.error('Error updating content:', error);
-//       alert('Failed to update content');
-//     } finally {
-//       setSaving(false);
-//     }
-//   };
-
-//   const uploadImage = async (file) => {
-//     const formData = new FormData();
-//     formData.append('file', file);
-
-//     try {
-//       const response = await axios.post('/api/upload', formData, {
-//         headers: {
-//           'Content-Type': 'multipart/form-data',
-//         },
-//       });
-//       return response.data;
-//     } catch (error) {
-//       console.error('Error uploading file:', error);
-//       throw error;
-//     }
-//   };
-
-//   const handleLogoUpload = async (e) => {
-//     const file = e.target.files[0];
-//     if (!file) return;
-
-//     try {
-//       const uploadResponse = await uploadImage(file);
-//       const response = await axios.post('/api/logos', uploadResponse);
-//       setContent({ ...content, logos: response.data });
-//       e.target.value = ''; // Reset file input
-//     } catch (error) {
-//       console.error('Error adding logo:', error);
-//       alert('Failed to upload logo');
-//     }
-//   };
-
-//   const deleteLogo = async (logoId) => {
-//     if (!window.confirm('Are you sure you want to delete this logo?')) return;
-
-//     try {
-//       const response = await axios.delete(`/api/logos/${logoId}`);
-//       setContent({ ...content, logos: response.data });
-//     } catch (error) {
-//       console.error('Error deleting logo:', error);
-//       alert('Failed to delete logo');
-//     }
-//   };
-
-//   const handlePersonImageUpload = async (e, personType) => {
-//     const file = e.target.files[0];
-//     if (!file) return;
-
-//     try {
-//       const uploadResponse = await uploadImage(file);
-//       const response = await axios.put(`/api/person-image/${personType}`, uploadResponse);
-//       setContent(response.data);
-//       e.target.value = ''; // Reset file input
-//     } catch (error) {
-//       console.error('Error updating person image:', error);
-//       alert('Failed to upload image');
-//     }
-//   };
-
-//   const deletePersonImage = async (personType) => {
-//     if (!window.confirm('Are you sure you want to delete this image?')) return;
-
-//     try {
-//       const response = await axios.delete(`/api/person-image/${personType}`);
-//       setContent(response.data);
-//     } catch (error) {
-//       console.error('Error deleting person image:', error);
-//       alert('Failed to delete image');
-//     }
-//   };
-
-//   const addEvent = async () => {
-//     if (!newEvent.title || !newEvent.description || !newEvent.date) {
-//       alert('Please fill all event fields');
-//       return;
-//     }
-
-//     try {
-//       const response = await axios.post('/api/events', newEvent);
-//       setContent({ ...content, events: response.data });
-//       setNewEvent({ title: '', description: '', date: '' });
-//     } catch (error) {
-//       console.error('Error adding event:', error);
-//       alert('Failed to add event');
-//     }
-//   };
-
-//   const deleteEvent = async (eventId) => {
-//     if (!window.confirm('Are you sure you want to delete this event?')) return;
-
-//     try {
-//       const response = await axios.delete(`/api/events/${eventId}`);
-//       setContent({ ...content, events: response.data });
-//     } catch (error) {
-//       console.error('Error deleting event:', error);
-//       alert('Failed to delete event');
-//     }
-//   };
-
-//   const handleGalleryUpload = async (e) => {
-//     const file = e.target.files[0];
-//     if (!file) return;
-
-//     if (!newGalleryItem.caption.trim()) {
-//       alert('Please provide a caption for the image');
-//       return;
-//     }
-
-//     try {
-//       const uploadResponse = await uploadImage(file);
-//       const galleryData = {
-//         ...uploadResponse,
-//         caption: newGalleryItem.caption
-//       };
-      
-//       const response = await axios.post('/api/gallery', galleryData);
-//       setContent({ ...content, gallery: response.data });
-//       setNewGalleryItem({ caption: '' });
-//       e.target.value = ''; // Reset file input
-//     } catch (error) {
-//       console.error('Error adding gallery item:', error);
-//       alert('Failed to add gallery item');
-//     }
-//   };
-
-//   const deleteGalleryItem = async (itemId) => {
-//     if (!window.confirm('Are you sure you want to delete this gallery item?')) return;
-
-//     try {
-//       const response = await axios.delete(`/api/gallery/${itemId}`);
-//       setContent({ ...content, gallery: response.data });
-//     } catch (error) {
-//       console.error('Error deleting gallery item:', error);
-//       alert('Failed to delete gallery item');
-//     }
-//   };
-
-//   const getImageUrl = (imageData) => {
-//     if (!imageData || !imageData.imageId) return null;
-//     return `http://localhost:5000/api/image/${imageData.imageId}`;
-//   };
-
-//   const logout = () => {
-//     localStorage.removeItem('adminToken');
-//     delete axios.defaults.headers.common['Authorization'];
-//     navigate('/admin');
-//   };
-
-//   if (loading) {
-//     return <div className="loading">Loading...</div>;
-//   }
-
-//   if (error) {
-//     return (
-//       <div className="error-page">
-//         <h2>Error</h2>
-//         <p>{error}</p>
-//         <button onClick={() => window.location.reload()}>Retry</button>
-//       </div>
-//     );
-//   }
-
-//   if (!content) {
-//     return <div className="loading">No content available</div>;
-//   }
-
-//   return (
-//     <div className="admin-dashboard">
-//       <header className="dashboard-header">
-//         <h1>Admin Dashboard</h1>
-//         <button onClick={logout} className="logout-btn">Logout</button>
-//       </header>
-
-//       <div className="dashboard-content">
-//         <section className="logos-section">
-//           <h2>School Logos</h2>
-//           <div className="logo-upload">
-//             <input
-//               type="file"
-//               accept="image/*"
-//               onChange={handleLogoUpload}
-//               id="logoUpload"
-//             />
-//             <label htmlFor="logoUpload" className="upload-btn">Add New Logo</label>
-//           </div>
-//           <div className="logos-grid">
-//             {content.logos && content.logos.length > 0 ? (
-//               content.logos.map((logo, index) => (
-//                 <div key={logo._id || index} className="logo-item">
-//                   <img src={getImageUrl(logo)} alt={logo.originalName} />
-//                   <div className="logo-actions">
-//                     <span className="logo-name">{logo.originalName}</span>
-//                     <button onClick={() => deleteLogo(logo._id)} className="delete-btn">Delete</button>
-//                   </div>
-//                 </div>
-//               ))
-//             ) : (
-//               <p>No logos uploaded</p>
-//             )}
-//           </div>
-//         </section>
-
-//         <section className="messages-section">
-//           <h2>Leadership Messages</h2>
-//           <div className="message-editors">
-//             {[
-//               { key: 'president', label: 'President' },
-//               { key: 'secretary', label: 'Secretary' },
-//               { key: 'correspondent', label: 'Correspondent' },
-//               { key: 'headmistress', label: 'Headmistress' }
-//             ].map(({ key, label }) => (
-//               <div key={key} className="editor-group">
-//                 <div className="image-upload-section">
-//                   <label>{label} Image:</label>
-//                   <div className="image-upload-controls">
-//                     <input
-//                       type="file"
-//                       accept="image/*"
-//                       onChange={(e) => handlePersonImageUpload(e, key)}
-//                       id={`${key}Image`}
-//                     />
-//                     <label htmlFor={`${key}Image`} className="upload-btn">Upload Image</label>
-//                     {content[`${key}Image`] && (
-//                       <button 
-//                         onClick={() => deletePersonImage(key)} 
-//                         className="delete-btn"
-//                       >
-//                         Delete Image
-//                       </button>
-//                     )}
-//                   </div>
-//                   {content[`${key}Image`] && (
-//                     <div className="image-preview">
-//                       <img
-//                         src={getImageUrl(content[`${key}Image`])}
-//                         alt={label}
-//                         className="preview"
-//                       />
-//                     </div>
-//                   )}
-//                 </div>
-//                 <label>{label} Message:</label>
-//                 <textarea
-//                   value={content[`${key}Message`] || ''}
-//                   onChange={(e) => handleContentUpdate(`${key}Message`, e.target.value)}
-//                   rows="4"
-//                   placeholder={`Enter ${label.toLowerCase()} message...`}
-//                 />
-//               </div>
-//             ))}
-//           </div>
-//         </section>
-
-//         {/* <section className="programme-section">
-//           <h2>Programme</h2>
-//           <textarea
-//             value={content.programme || ''}
-//             onChange={(e) => handleContentUpdate('programme', e.target.value)}
-//             rows="6"
-//             placeholder="Enter programme details..."
-//           />
-//         </section> */}
-
-//         <section className="events-section">
-//           <h2>Events Management</h2>
-//           <div className="add-event">
-//             <input
-//               type="text"
-//               placeholder="Event Title"
-//               value={newEvent.title}
-//               onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
-//             />
-//             <textarea
-//               placeholder="Event Description"
-//               value={newEvent.description}
-//               onChange={(e) => setNewEvent({...newEvent, description: e.target.value})}
-//               rows="3"
-//             />
-//             <input
-//               type="date"
-//               value={newEvent.date}
-//               onChange={(e) => setNewEvent({...newEvent, date: e.target.value})}
-//             />
-//             <button onClick={addEvent}>Add Event</button>
-//           </div>
-//           <div className="events-list">
-//             {content.events && content.events.length > 0 ? (
-//               content.events.map((event, index) => (
-//                 <div key={event._id || index} className="event-item">
-//                   <div>
-//                     <h3>{event.title}</h3>
-//                     <p>{event.description}</p>
-//                     <span>{new Date(event.date).toLocaleDateString()}</span>
-//                   </div>
-//                   <button onClick={() => deleteEvent(event._id)}>Delete</button>
-//                 </div>
-//               ))
-//             ) : (
-//               <p>No events available</p>
-//             )}
-//           </div>
-//         </section>
-
-//         <section className="gallery-section">
-//           <h2>Gallery Management</h2>
-//           <div className="add-gallery">
-//             <input
-//               type="text"
-//               placeholder="Image Caption"
-//               value={newGalleryItem.caption}
-//               onChange={(e) => setNewGalleryItem({...newGalleryItem, caption: e.target.value})}
-//             />
-//             <input
-//               type="file"
-//               accept="image/*"
-//               onChange={handleGalleryUpload}
-//               id="galleryUpload"
-//             />
-//             <label htmlFor="galleryUpload" className="upload-btn">Add Gallery Image</label>
-//           </div>
-//           <div className="gallery-grid">
-//             {content.gallery && content.gallery.length > 0 ? (
-//               content.gallery.map((item, index) => (
-//                 <div key={item._id || index} className="gallery-item">
-//                   <img src={getImageUrl(item)} alt={item.caption} />
-//                   <p>{item.caption}</p>
-//                   <button onClick={() => deleteGalleryItem(item._id)}>Delete</button>
-//                 </div>
-//               ))
-//             ) : (
-//               <p>No gallery items available</p>
-//             )}
-//           </div>
-//         </section>
-//       </div>
-
-//       {saving && <div className="saving-indicator">Saving...</div>}
-//     </div>
-//   );
-// };
-
-// export default AdminDashboard;
-
+// src/components/AdminDashboard.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './AdminDashboard.css';
 
 const AdminDashboard = () => {
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [newEvent, setNewEvent] = useState({ title: '', description: '', date: '' });
+  const [newEvent, setNewEvent] = useState({ 
+    title: '', 
+    description: '', 
+    date: '', 
+    time: '', 
+    location: '',
+    image: null 
+  });
+  const [eventImageFile, setEventImageFile] = useState(null);
+  const [editingEvent, setEditingEvent] = useState(null);
   const [newGalleryItem, setNewGalleryItem] = useState({ caption: '' });
   const [newHomeGalleryItem, setNewHomeGalleryItem] = useState({ caption: '' });
   const [error, setError] = useState('');
@@ -535,17 +141,57 @@ const AdminDashboard = () => {
 
   const addEvent = async () => {
     if (!newEvent.title || !newEvent.description || !newEvent.date) {
-      alert('Please fill all event fields');
+      alert('Please fill all required event fields (title, description, date)');
       return;
     }
 
     try {
-      const response = await axios.post('/api/events', newEvent);
+      let eventData = { ...newEvent };
+      
+      // Upload image if provided
+      if (eventImageFile) {
+        const uploadResponse = await uploadImage(eventImageFile);
+        eventData.image = uploadResponse;
+      }
+
+      const response = await axios.post('/api/events', eventData);
       setContent({ ...content, events: response.data });
-      setNewEvent({ title: '', description: '', date: '' });
+      setNewEvent({ title: '', description: '', date: '', time: '', location: '', image: null });
+      setEventImageFile(null);
+      // Reset file input
+      const fileInput = document.getElementById('eventImageUpload');
+      if (fileInput) fileInput.value = '';
     } catch (error) {
       console.error('Error adding event:', error);
       alert('Failed to add event');
+    }
+  };
+
+  const updateEvent = async () => {
+    if (!editingEvent.title || !editingEvent.description || !editingEvent.date) {
+      alert('Please fill all required event fields (title, description, date)');
+      return;
+    }
+
+    try {
+      let eventData = { ...editingEvent };
+      
+      // Upload new image if provided
+      if (eventImageFile) {
+        const uploadResponse = await uploadImage(eventImageFile);
+        eventData.image = uploadResponse;
+      }
+
+      const response = await axios.put(`/api/events/${editingEvent._id}`, eventData);
+      setContent({ ...content, events: response.data });
+      setEditingEvent(null);
+      setEventImageFile(null);
+      // Reset file input
+      const fileInput = document.getElementById('editEventImageUpload');
+      if (fileInput) fileInput.value = '';
+    } catch (error) {
+      console.error('Error updating event:', error);
+      alert('Failed to update event');
     }
   };
 
@@ -558,6 +204,18 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('Error deleting event:', error);
       alert('Failed to delete event');
+    }
+  };
+
+  const deleteEventImage = async (eventId) => {
+    if (!window.confirm('Are you sure you want to delete this event image?')) return;
+
+    try {
+      const response = await axios.delete(`/api/events/${eventId}/image`);
+      setContent({ ...content, events: response.data });
+    } catch (error) {
+      console.error('Error deleting event image:', error);
+      alert('Failed to delete event image');
     }
   };
 
@@ -649,216 +307,482 @@ const AdminDashboard = () => {
   };
 
   if (loading) {
-    return <div className="loading">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-xl text-gray-600">Loading...</div>
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className="error-page">
-        <h2>Error</h2>
-        <p>{error}</p>
-        <button onClick={() => window.location.reload()}>Retry</button>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full mx-4">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Error</h2>
+          <p className="text-gray-700 mb-6">{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     );
   }
 
   if (!content) {
-    return <div className="loading">No content available</div>;
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-xl text-gray-600">No content available</div>
+      </div>
+    );
   }
 
   return (
-    <div className="admin-dashboard">
-      <header className="dashboard-header">
-        <h1>Admin Dashboard</h1>
-        <button onClick={logout} className="logout-btn">Logout</button>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-6">
+            <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+            <button 
+              onClick={logout}
+              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
       </header>
 
-      <div className="dashboard-content">
-        <section className="logos-section">
-          <h2>School Logos</h2>
-          <div className="logo-upload">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* School Logos Section */}
+        <section className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">School Logos</h2>
+          <div className="mb-6">
             <input
               type="file"
               accept="image/*"
               onChange={handleLogoUpload}
               id="logoUpload"
+              className="hidden"
             />
-            <label htmlFor="logoUpload" className="upload-btn">Add New Logo</label>
+            <label 
+              htmlFor="logoUpload" 
+              className="inline-block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
+            >
+              Add New Logo
+            </label>
           </div>
-          <div className="logos-grid">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {content.logos && content.logos.length > 0 ? (
               content.logos.map((logo, index) => (
-                <div key={logo._id || index} className="logo-item">
-                  <img src={getImageUrl(logo)} alt={logo.originalName} />
-                  <div className="logo-actions">
-                    <span className="logo-name">{logo.originalName}</span>
-                    <button onClick={() => deleteLogo(logo._id)} className="delete-btn">Delete</button>
+                <div key={logo._id || index} className="bg-gray-50 rounded-lg p-4">
+                  <img 
+                    src={getImageUrl(logo)} 
+                    alt={logo.originalName}
+                    className="w-full h-32 object-contain rounded-md mb-3"
+                  />
+                  <div className="space-y-2">
+                    <span className="text-sm text-gray-600 block truncate">{logo.originalName}</span>
+                    <button 
+                      onClick={() => deleteLogo(logo._id)}
+                      className="w-full bg-red-600 text-white py-1 px-2 rounded-md text-sm hover:bg-red-700 transition-colors"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
               ))
             ) : (
-              <p>No logos uploaded</p>
+              <p className="text-gray-600 col-span-full">No logos uploaded</p>
             )}
           </div>
         </section>
 
-        <section className="messages-section">
-          <h2>Leadership Messages</h2>
-          <div className="message-editors">
+        {/* Leadership Messages Section */}
+        <section className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Leadership Messages</h2>
+          <div className="space-y-8">
             {[
               { key: 'president', label: 'President' },
               { key: 'secretary', label: 'Secretary' },
               { key: 'correspondent', label: 'Correspondent' },
               { key: 'headmistress', label: 'Headmistress' }
             ].map(({ key, label }) => (
-              <div key={key} className="editor-group">
-                <div className="image-upload-section">
-                  <label>{label} Image:</label>
-                  <div className="image-upload-controls">
+              <div key={key} className="border border-gray-200 rounded-lg p-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">{label}</h3>
+                
+                {/* Image Upload Section */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {label} Image:
+                  </label>
+                  <div className="flex flex-wrap gap-2 mb-3">
                     <input
                       type="file"
                       accept="image/*"
                       onChange={(e) => handlePersonImageUpload(e, key)}
                       id={`${key}Image`}
+                      className="hidden"
                     />
-                    <label htmlFor={`${key}Image`} className="upload-btn">Upload Image</label>
+                    <label 
+                      htmlFor={`${key}Image`}
+                      className="bg-green-600 text-white px-3 py-1 rounded-md text-sm hover:bg-green-700 transition-colors cursor-pointer"
+                    >
+                      Upload Image
+                    </label>
                     {content[`${key}Image`] && (
                       <button 
-                        onClick={() => deletePersonImage(key)} 
-                        className="delete-btn"
+                        onClick={() => deletePersonImage(key)}
+                        className="bg-red-600 text-white px-3 py-1 rounded-md text-sm hover:bg-red-700 transition-colors"
                       >
                         Delete Image
                       </button>
                     )}
                   </div>
                   {content[`${key}Image`] && (
-                    <div className="image-preview">
+                    <div className="mt-3">
                       <img
                         src={getImageUrl(content[`${key}Image`])}
                         alt={label}
-                        className="preview"
+                        className="w-32 h-32 object-cover rounded-lg border"
                       />
                     </div>
                   )}
                 </div>
-                <label>{label} Message:</label>
-                <textarea
-                  value={content[`${key}Message`] || ''}
-                  onChange={(e) => handleContentUpdate(`${key}Message`, e.target.value)}
-                  rows="4"
-                  placeholder={`Enter ${label.toLowerCase()} message...`}
-                />
+
+                {/* Message Textarea */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {label} Message:
+                  </label>
+                  <textarea
+                    value={content[`${key}Message`] || ''}
+                    onChange={(e) => handleContentUpdate(`${key}Message`, e.target.value)}
+                    rows="4"
+                    placeholder={`Enter ${label.toLowerCase()} message...`}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="events-section">
-          <h2>Events Management</h2>
-          <div className="add-event">
-            <input
-              type="text"
-              placeholder="Event Title"
-              value={newEvent.title}
-              onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
-            />
+        {/* Events Section */}
+        <section className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Events Management</h2>
+          
+          {/* Add Event Form */}
+          <div className="bg-gray-50 rounded-lg p-6 mb-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Add New Event</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <input
+                type="text"
+                placeholder="Event Title *"
+                value={newEvent.title}
+                onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="date"
+                value={newEvent.date}
+                onChange={(e) => setNewEvent({...newEvent, date: e.target.value})}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="time"
+                placeholder="Event Time"
+                value={newEvent.time}
+                onChange={(e) => setNewEvent({...newEvent, time: e.target.value})}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="text"
+                placeholder="Location"
+                value={newEvent.location}
+                onChange={(e) => setNewEvent({...newEvent, location: e.target.value})}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
             <textarea
-              placeholder="Event Description"
+              placeholder="Event Description *"
               value={newEvent.description}
               onChange={(e) => setNewEvent({...newEvent, description: e.target.value})}
               rows="3"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
             />
-            <input
-              type="date"
-              value={newEvent.date}
-              onChange={(e) => setNewEvent({...newEvent, date: e.target.value})}
-            />
-            <button onClick={addEvent}>Add Event</button>
+            <div className="flex flex-wrap gap-4 items-center">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setEventImageFile(e.target.files[0])}
+                id="eventImageUpload"
+                className="hidden"
+              />
+              <label 
+                htmlFor="eventImageUpload"
+                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors cursor-pointer"
+              >
+                Choose Event Image
+              </label>
+              {eventImageFile && (
+                <span className="text-sm text-gray-600">{eventImageFile.name}</span>
+              )}
+              <button 
+                onClick={addEvent}
+                className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
+              >
+                Add Event
+              </button>
+            </div>
           </div>
-          <div className="events-list">
+
+          {/* Events List */}
+          <div className="space-y-6">
             {content.events && content.events.length > 0 ? (
               content.events.map((event, index) => (
-                <div key={event._id || index} className="event-item">
-                  <div>
-                    <h3>{event.title}</h3>
-                    <p>{event.description}</p>
-                    <span>{new Date(event.date).toLocaleDateString()}</span>
-                  </div>
-                  <button onClick={() => deleteEvent(event._id)}>Delete</button>
+                <div key={event._id || index} className="border border-gray-200 rounded-lg p-6">
+                  {editingEvent && editingEvent._id === event._id ? (
+                    // Edit Form
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input
+                          type="text"
+                          value={editingEvent.title}
+                          onChange={(e) => setEditingEvent({...editingEvent, title: e.target.value})}
+                          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <input
+                          type="date"
+                          value={editingEvent.date ? editingEvent.date.split('T')[0] : ''}
+                          onChange={(e) => setEditingEvent({...editingEvent, date: e.target.value})}
+                          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <input
+                          type="time"
+                          value={editingEvent.time || ''}
+                          onChange={(e) => setEditingEvent({...editingEvent, time: e.target.value})}
+                          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Location"
+                          value={editingEvent.location || ''}
+                          onChange={(e) => setEditingEvent({...editingEvent, location: e.target.value})}
+                          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <textarea
+                        value={editingEvent.description}
+                        onChange={(e) => setEditingEvent({...editingEvent, description: e.target.value})}
+                        rows="3"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <div className="flex flex-wrap gap-4 items-center">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => setEventImageFile(e.target.files[0])}
+                          id="editEventImageUpload"
+                          className="hidden"
+                        />
+                        <label 
+                          htmlFor="editEventImageUpload"
+                          className="bg-green-600 text-white px-3 py-1 rounded-md hover:bg-green-700 transition-colors cursor-pointer text-sm"
+                        >
+                          Change Image
+                        </label>
+                        {eventImageFile && (
+                          <span className="text-sm text-gray-600">{eventImageFile.name}</span>
+                        )}
+                        <button 
+                          onClick={updateEvent}
+                          className="bg-blue-600 text-white px-4 py-1 rounded-md text-sm hover:bg-blue-700 transition-colors"
+                        >
+                          Save Changes
+                        </button>
+                        <button 
+                          onClick={() => {
+                            setEditingEvent(null);
+                            setEventImageFile(null);
+                          }}
+                          className="bg-gray-600 text-white px-4 py-1 rounded-md text-sm hover:bg-gray-700 transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    // Display Event
+                    <div className="flex flex-col lg:flex-row gap-6">
+                      {event.image && event.image.imageId && (
+                        <div className="lg:w-1/3">
+                          <img 
+                            src={getImageUrl(event.image)} 
+                            alt={event.title}
+                            className="w-full h-48 object-cover rounded-md"
+                          />
+                          <button 
+                            onClick={() => deleteEventImage(event._id)}
+                            className="mt-2 w-full bg-red-600 text-white py-1 px-2 rounded-md text-sm hover:bg-red-700 transition-colors"
+                          >
+                            Remove Image
+                          </button>
+                        </div>
+                      )}
+                      <div className="flex-1">
+                        <h3 className="text-xl font-medium text-gray-900 mb-2">{event.title}</h3>
+                        <div className="text-sm text-gray-600 mb-2 space-y-1">
+                          <div>📅 {new Date(event.date).toLocaleDateString()}</div>
+                          {event.time && <div>🕐 {event.time}</div>}
+                          {event.location && <div>📍 {event.location}</div>}
+                        </div>
+                        <p className="text-gray-700 mb-4">{event.description}</p>
+                        <div className="flex flex-wrap gap-2">
+                          <button 
+                            onClick={() => setEditingEvent(event)}
+                            className="bg-blue-600 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-700 transition-colors"
+                          >
+                            Edit
+                          </button>
+                          <button 
+                            onClick={() => deleteEvent(event._id)}
+                            className="bg-red-600 text-white px-3 py-1 rounded-md text-sm hover:bg-red-700 transition-colors"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))
             ) : (
-              <p>No events available</p>
+              <p className="text-gray-600">No events available</p>
             )}
           </div>
         </section>
 
-        <section className="home-gallery-section">
-          <h2>Home Gallery Management</h2>
-          <div className="add-home-gallery">
-            <input
-              type="text"
-              placeholder="Image Caption"
-              value={newHomeGalleryItem.caption}
-              onChange={(e) => setNewHomeGalleryItem({...newHomeGalleryItem, caption: e.target.value})}
-            />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleHomeGalleryUpload}
-              id="homeGalleryUpload"
-            />
-            <label htmlFor="homeGalleryUpload" className="upload-btn">Add Home Gallery Image</label>
+        {/* Home Gallery Section */}
+        <section className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Home Gallery Management</h2>
+          
+          {/* Add Home Gallery Form */}
+          <div className="bg-gray-50 rounded-lg p-4 mb-6">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <input
+                type="text"
+                placeholder="Image Caption"
+                value={newHomeGalleryItem.caption}
+                onChange={(e) => setNewHomeGalleryItem({...newHomeGalleryItem, caption: e.target.value})}
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleHomeGalleryUpload}
+                id="homeGalleryUpload"
+                className="hidden"
+              />
+              <label 
+                htmlFor="homeGalleryUpload"
+                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors cursor-pointer text-center"
+              >
+                Add Home Gallery Image
+              </label>
+            </div>
           </div>
-          <div className="home-gallery-grid">
+
+          {/* Home Gallery Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {content.homegallery && content.homegallery.length > 0 ? (
               content.homegallery.map((item, index) => (
-                <div key={item._id || index} className="home-gallery-item">
-                  <img src={getImageUrl(item)} alt={item.caption} />
-                  <p>{item.caption}</p>
-                  <button onClick={() => deleteHomeGalleryItem(item._id)}>Delete</button>
+                <div key={item._id || index} className="bg-gray-50 rounded-lg p-4">
+                  <img 
+                    src={getImageUrl(item)} 
+                    alt={item.caption}
+                    className="w-full h-48 object-cover rounded-md mb-3"
+                  />
+                  <p className="text-sm text-gray-700 mb-3">{item.caption}</p>
+                  <button 
+                    onClick={() => deleteHomeGalleryItem(item._id)}
+                    className="w-full bg-red-600 text-white py-1 px-2 rounded-md text-sm hover:bg-red-700 transition-colors"
+                  >
+                    Delete
+                  </button>
                 </div>
               ))
             ) : (
-              <p>No home gallery items available</p>
+              <p className="text-gray-600 col-span-full">No home gallery items available</p>
             )}
           </div>
         </section>
 
-        <section className="gallery-section">
-          <h2>Gallery Management</h2>
-          <div className="add-gallery">
-            <input
-              type="text"
-              placeholder="Image Caption"
-              value={newGalleryItem.caption}
-              onChange={(e) => setNewGalleryItem({...newGalleryItem, caption: e.target.value})}
-            />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleGalleryUpload}
-              id="galleryUpload"
-            />
-            <label htmlFor="galleryUpload" className="upload-btn">Add Gallery Image</label>
+        {/* Gallery Section */}
+        <section className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Gallery Management</h2>
+          
+          {/* Add Gallery Form */}
+          <div className="bg-gray-50 rounded-lg p-4 mb-6">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <input
+                type="text"
+                placeholder="Image Caption"
+                value={newGalleryItem.caption}
+                onChange={(e) => setNewGalleryItem({...newGalleryItem, caption: e.target.value})}
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleGalleryUpload}
+                id="galleryUpload"
+                className="hidden"
+              />
+              <label 
+                htmlFor="galleryUpload"
+                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors cursor-pointer text-center"
+              >
+                Add Gallery Image
+              </label>
+            </div>
           </div>
-          <div className="gallery-grid">
+
+          {/* Gallery Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {content.gallery && content.gallery.length > 0 ? (
               content.gallery.map((item, index) => (
-                <div key={item._id || index} className="gallery-item">
-                  <img src={getImageUrl(item)} alt={item.caption} />
-                  <p>{item.caption}</p>
-                  <button onClick={() => deleteGalleryItem(item._id)}>Delete</button>
+                <div key={item._id || index} className="bg-gray-50 rounded-lg p-4">
+                  <img 
+                    src={getImageUrl(item)} 
+                    alt={item.caption}
+                    className="w-full h-48 object-cover rounded-md mb-3"
+                  />
+                  <p className="text-sm text-gray-700 mb-3">{item.caption}</p>
+                  <button 
+                    onClick={() => deleteGalleryItem(item._id)}
+                    className="w-full bg-red-600 text-white py-1 px-2 rounded-md text-sm hover:bg-red-700 transition-colors"
+                  >
+                    Delete
+                  </button>
                 </div>
               ))
             ) : (
-              <p>No gallery items available</p>
+              <p className="text-gray-600 col-span-full">No gallery items available</p>
             )}
           </div>
         </section>
       </div>
 
-      {saving && <div className="saving-indicator">Saving...</div>}
+      {/* Saving Indicator */}
+      {saving && (
+        <div className="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-md shadow-lg">
+          Saving...
+        </div>
+      )}
     </div>
   );
 };

@@ -1,6 +1,5 @@
 // src/components/Events.js
 import React from 'react';
-import './PageStyles.css';
 
 const Events = () => {
   const upcomingEvents = [

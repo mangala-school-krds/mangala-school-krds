@@ -54,8 +54,6 @@ import Navbar from './components/Navbar';
 import HomePage from './components/HomePage';
 import AdminLogin from './components/AdminLogin';
 import AdminDashboard from './components/AdminDashboard';
-import Examination from './components/Examination';
-import About from './components/About';
 import AboutMangalaSchool from './components/AboutMangalaSchool';
 import Leadership from './components/Leadership';
 import WhyMangalaSchool from './components/WhyMangalaSchool';
@@ -64,12 +62,13 @@ import Alumni from './components/Alumni';
 import Admission from './components/Admission';
 import AcademicCorner from './components/AcademicCorner';
 import Gallery from './components/Gallery';
-import Events from './components/Events';
+import News from './components/News';
 import MandatoryPublicDisclosure from './components/MandatoryPublicDisclosure';
 import NotificationsCircular from './components/NotificationsCircular';
 import Result from './components/Result';
 import Contact from './components/Contact';
 import './App.css';
+import Footer from './components/Footer';
 
 function App() {
   return (
@@ -79,12 +78,11 @@ function App() {
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/*" element={
-            <>
+            <div>
               <Navbar />
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 {/* About routes */}
-                <Route path="/about" element={<About />} />
                 <Route path="/about/mangala-school" element={<AboutMangalaSchool />} />
                 <Route path="/about/leadership" element={<Leadership />} />
                 <Route path="/about/why-mangala-school" element={<WhyMangalaSchool />} />
@@ -94,14 +92,15 @@ function App() {
                 <Route path="/admissions" element={<Admission />} />
                 <Route path="/academic-corner" element={<AcademicCorner />} />
                 <Route path="/gallery" element={<Gallery />} />
-                <Route path="/events" element={<Events />} />
+                <Route path="/news" element={<News />} />
                 <Route path="/mandatory-public-disclosure" element={<MandatoryPublicDisclosure />} />
                 <Route path="/notifications-circular" element={<NotificationsCircular />} />
                 <Route path="/contact" element={<Contact />} />
                 {/* Keep result route for existing functionality */}
                 <Route path="/result" element={<Result />} />
               </Routes>
-            </>
+              <Footer />
+            </div>
           } />
         </Routes>
       </div>
