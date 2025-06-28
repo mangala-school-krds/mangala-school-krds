@@ -64,7 +64,6 @@ import AcademicCorner from './components/AcademicCorner';
 import Gallery from './components/Gallery';
 import MandatoryPublicDisclosure from './components/MandatoryPublicDisclosure';
 import NotificationsCircular from './components/NotificationsCircular';
-import Result from './components/Result';
 import Contact from './components/Contact';
 import './App.css';
 import Footer from './components/Footer';
@@ -96,8 +95,6 @@ function App() {
                 <Route path="/mandatory-public-disclosure" element={<MandatoryPublicDisclosure />} />
                 <Route path="/notifications-circular" element={<NotificationsCircular />} />
                 <Route path="/contact" element={<Contact />} />
-                {/* Keep result route for existing functionality */}
-                <Route path="/result" element={<Result />} />
               </Routes>
               <Footer />
             </div>

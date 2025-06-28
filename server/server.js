@@ -81,6 +81,19 @@
 //     },
 //     createdAt: { type: Date, default: Date.now }
 //   }],
+//   news: [{ 
+//     title: String, 
+//     description: String, 
+//     publishDate: Date,
+//     expiryDate: Date, // Optional expiry date for news
+//     priority: { type: String, enum: ['low', 'medium', 'high'], default: 'medium' },
+//     image: {
+//       imageId: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' },
+//       filename: String,
+//       originalName: String
+//     },
+//     createdAt: { type: Date, default: Date.now }
+//   }],
 //   gallery: [{ 
 //     imageId: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' },
 //     filename: String,
@@ -189,6 +202,7 @@
 //         programme: 'Our academic programs',
 //         logos: [],
 //         events: [],
+//         news: [],
 //         gallery: [],
 //         homegallery: []
 //       });
@@ -200,7 +214,7 @@
 //   }
 // });
 
-// // Get events sorted by date (newest first for news view)
+// // Get events sorted by date (newest first)
 // app.get('/api/events', async (req, res) => {
 //   try {
 //     const content = await Content.findOne();
@@ -208,9 +222,36 @@
 //       return res.json([]);
 //     }
     
-//     // Sort events by date (newest first)
 //     const sortedEvents = content.events.sort((a, b) => new Date(b.date) - new Date(a.date));
 //     res.json(sortedEvents);
+//   } catch (error) {
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+// // Get news sorted by priority and date (active news only)
+// app.get('/api/news', async (req, res) => {
+//   try {
+//     const content = await Content.findOne();
+//     if (!content) {
+//       return res.json([]);
+//     }
+    
+//     const currentDate = new Date();
+//     const activeNews = content.news.filter(newsItem => {
+//       // Include news that hasn't expired or has no expiry date
+//       return !newsItem.expiryDate || new Date(newsItem.expiryDate) > currentDate;
+//     });
+    
+//     // Sort by priority (high, medium, low) then by publish date (newest first)
+//     const priorityOrder = { 'high': 3, 'medium': 2, 'low': 1 };
+//     const sortedNews = activeNews.sort((a, b) => {
+//       const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority];
+//       if (priorityDiff !== 0) return priorityDiff;
+//       return new Date(b.publishDate) - new Date(a.publishDate);
+//     });
+    
+//     res.json(sortedNews);
 //   } catch (error) {
 //     res.status(500).json({ message: 'Server error' });
 //   }
@@ -303,7 +344,6 @@
 //     const logoToDelete = content.logos.find(logo => logo._id.toString() === req.params.id);
     
 //     if (logoToDelete) {
-//       // Delete image from MongoDB
 //       await Image.findByIdAndDelete(logoToDelete.imageId);
 //     }
     
@@ -320,11 +360,10 @@
 // app.put('/api/person-image/:type', authenticateToken, async (req, res) => {
 //   try {
 //     const { imageId, filename, originalName } = req.body;
-//     const imageType = req.params.type + 'Image'; // e.g., 'presidentImage'
+//     const imageType = req.params.type + 'Image';
     
 //     const content = await Content.findOne();
     
-//     // Delete old image if exists
 //     if (content[imageType] && content[imageType].imageId) {
 //       await Image.findByIdAndDelete(content[imageType].imageId);
 //     }
@@ -356,6 +395,7 @@
 //   }
 // });
 
+// // EVENT ROUTES
 // // Add event with optional image
 // app.post('/api/events', authenticateToken, async (req, res) => {
 //   try {
@@ -401,12 +441,10 @@
     
 //     const event = content.events[eventIndex];
     
-//     // Delete old image if replacing with new one
 //     if (image && event.image && event.image.imageId) {
 //       await Image.findByIdAndDelete(event.image.imageId);
 //     }
     
-//     // Update event fields
 //     event.title = title;
 //     event.description = description;
 //     event.date = date;
@@ -416,7 +454,6 @@
 //     if (image) {
 //       event.image = image;
 //     } else if (!image && event.image) {
-//       // Remove image if not provided
 //       if (event.image.imageId) {
 //         await Image.findByIdAndDelete(event.image.imageId);
 //       }
@@ -437,7 +474,6 @@
 //     const eventToDelete = content.events.find(event => event._id.toString() === req.params.id);
     
 //     if (eventToDelete && eventToDelete.image && eventToDelete.image.imageId) {
-//       // Delete associated image from MongoDB
 //       await Image.findByIdAndDelete(eventToDelete.image.imageId);
 //     }
     
@@ -468,6 +504,116 @@
 //   }
 // });
 
+// // NEWS ROUTES
+// // Add news with optional image
+// app.post('/api/news', authenticateToken, async (req, res) => {
+//   try {
+//     const { title, description, publishDate, expiryDate, priority, image } = req.body;
+//     const content = await Content.findOne();
+    
+//     if (!content) {
+//       return res.status(404).json({ message: 'Content not found' });
+//     }
+    
+//     const newNews = {
+//       title,
+//       description,
+//       publishDate: publishDate || new Date(),
+//       expiryDate,
+//       priority: priority || 'medium',
+//       createdAt: new Date()
+//     };
+    
+//     if (image) {
+//       newNews.image = image;
+//     }
+    
+//     content.news.push(newNews);
+//     await content.save();
+    
+//     res.json(content.news);
+//   } catch (error) {
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+// // Update news
+// app.put('/api/news/:id', authenticateToken, async (req, res) => {
+//   try {
+//     const { title, description, publishDate, expiryDate, priority, image } = req.body;
+//     const content = await Content.findOne();
+    
+//     const newsIndex = content.news.findIndex(newsItem => newsItem._id.toString() === req.params.id);
+//     if (newsIndex === -1) {
+//       return res.status(404).json({ message: 'News not found' });
+//     }
+    
+//     const newsItem = content.news[newsIndex];
+    
+//     if (image && newsItem.image && newsItem.image.imageId) {
+//       await Image.findByIdAndDelete(newsItem.image.imageId);
+//     }
+    
+//     newsItem.title = title;
+//     newsItem.description = description;
+//     newsItem.publishDate = publishDate;
+//     newsItem.expiryDate = expiryDate;
+//     newsItem.priority = priority;
+    
+//     if (image) {
+//       newsItem.image = image;
+//     } else if (!image && newsItem.image) {
+//       if (newsItem.image.imageId) {
+//         await Image.findByIdAndDelete(newsItem.image.imageId);
+//       }
+//       newsItem.image = undefined;
+//     }
+    
+//     await content.save();
+//     res.json(content.news);
+//   } catch (error) {
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+// // Delete news
+// app.delete('/api/news/:id', authenticateToken, async (req, res) => {
+//   try {
+//     const content = await Content.findOne();
+//     const newsToDelete = content.news.find(newsItem => newsItem._id.toString() === req.params.id);
+    
+//     if (newsToDelete && newsToDelete.image && newsToDelete.image.imageId) {
+//       await Image.findByIdAndDelete(newsToDelete.image.imageId);
+//     }
+    
+//     content.news = content.news.filter(newsItem => newsItem._id.toString() !== req.params.id);
+//     await content.save();
+    
+//     res.json(content.news);
+//   } catch (error) {
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+// // Delete news image only
+// app.delete('/api/news/:id/image', authenticateToken, async (req, res) => {
+//   try {
+//     const content = await Content.findOne();
+//     const newsItem = content.news.find(newsItem => newsItem._id.toString() === req.params.id);
+    
+//     if (newsItem && newsItem.image && newsItem.image.imageId) {
+//       await Image.findByIdAndDelete(newsItem.image.imageId);
+//       newsItem.image = undefined;
+//       await content.save();
+//     }
+    
+//     res.json(content.news);
+//   } catch (error) {
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+// // GALLERY ROUTES
 // // Add gallery item
 // app.post('/api/gallery', authenticateToken, async (req, res) => {
 //   try {
@@ -490,7 +636,6 @@
 //     const galleryItem = content.gallery.find(item => item._id.toString() === req.params.id);
     
 //     if (galleryItem) {
-//       // Delete image from MongoDB
 //       await Image.findByIdAndDelete(galleryItem.imageId);
 //     }
     
@@ -525,7 +670,6 @@
 //     const homeGalleryItem = content.homegallery.find(item => item._id.toString() === req.params.id);
     
 //     if (homeGalleryItem) {
-//       // Delete image from MongoDB
 //       await Image.findByIdAndDelete(homeGalleryItem.imageId);
 //     }
     
@@ -578,6 +722,37 @@ const ImageSchema = new mongoose.Schema({
   mimetype: { type: String, required: true },
   data: { type: Buffer, required: true },
   size: { type: Number, required: true },
+  uploadDate: { type: Date, default: Date.now }
+});
+
+// PDF Schema for storing PDFs in MongoDB
+const PDFSchema = new mongoose.Schema({
+  filename: { type: String, required: true },
+  originalName: { type: String, required: true },
+  mimetype: { type: String, required: true },
+  data: { type: Buffer, required: true },
+  size: { type: Number, required: true },
+  uploadDate: { type: Date, default: Date.now }
+});
+
+// Transfer Certificate Schema
+const TransferCertificateSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  startYear: { type: Number, required: true },
+  endYear: { type: Number, required: true },
+  pdfId: { type: mongoose.Schema.Types.ObjectId, ref: 'PDF', required: true },
+  filename: { type: String, required: true },
+  originalName: { type: String, required: true },
+  uploadDate: { type: Date, default: Date.now }
+});
+
+// Notification/Circular Schema
+const NotificationSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  date: { type: Date, required: true },
+  pdfId: { type: mongoose.Schema.Types.ObjectId, ref: 'PDF', required: true },
+  filename: { type: String, required: true },
+  originalName: { type: String, required: true },
   uploadDate: { type: Date, default: Date.now }
 });
 
@@ -655,6 +830,9 @@ const ContentSchema = new mongoose.Schema({
 
 const Admin = mongoose.model('Admin', AdminSchema);
 const Image = mongoose.model('Image', ImageSchema);
+const PDF = mongoose.model('PDF', PDFSchema);
+const TransferCertificate = mongoose.model('TransferCertificate', TransferCertificateSchema);
+const Notification = mongoose.model('Notification', NotificationSchema);
 const Content = mongoose.model('Content', ContentSchema);
 
 // Multer configuration for memory storage
@@ -662,7 +840,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ 
   storage: storage,
   limits: {
-    fileSize: 10 * 1024 * 1024 // 10MB limit
+    fileSize: 50 * 1024 * 1024 // 50MB limit for PDFs
   }
 });
 
@@ -846,6 +1024,39 @@ app.post('/api/upload', authenticateToken, upload.single('file'), async (req, re
   }
 });
 
+// Upload PDF and store in MongoDB
+app.post('/api/upload-pdf', authenticateToken, upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    // Check if the file is a PDF
+    if (req.file.mimetype !== 'application/pdf') {
+      return res.status(400).json({ message: 'Only PDF files are allowed' });
+    }
+
+    const pdf = new PDF({
+      filename: Date.now() + '-' + req.file.originalname,
+      originalName: req.file.originalname,
+      mimetype: req.file.mimetype,
+      data: req.file.buffer,
+      size: req.file.size
+    });
+
+    await pdf.save();
+    
+    res.json({ 
+      pdfId: pdf._id,
+      filename: pdf.filename,
+      originalName: pdf.originalName
+    });
+  } catch (error) {
+    console.error('Error uploading PDF:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // Serve images from MongoDB
 app.get('/api/image/:id', async (req, res) => {
   try {
@@ -857,6 +1068,23 @@ app.get('/api/image/:id', async (req, res) => {
     res.set('Content-Type', image.mimetype);
     res.set('Content-Length', image.size);
     res.send(image.data);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Serve PDFs from MongoDB
+app.get('/api/pdf/:id', async (req, res) => {
+  try {
+    const pdf = await PDF.findById(req.params.id);
+    if (!pdf) {
+      return res.status(404).json({ message: 'PDF not found' });
+    }
+
+    res.set('Content-Type', pdf.mimetype);
+    res.set('Content-Length', pdf.size);
+    res.set('Content-Disposition', `inline; filename="${pdf.originalName}"`);
+    res.send(pdf.data);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
@@ -1226,6 +1454,224 @@ app.delete('/api/homegallery/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// TRANSFER CERTIFICATE ROUTES
+// Add transfer certificate
+app.post('/api/transfer-certificates', authenticateToken, async (req, res) => {
+  try {
+    const { name, startYear, endYear, pdfId, filename, originalName } = req.body;
+    
+    if (!name || !startYear || !endYear || !pdfId) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+    
+    const transferCertificate = new TransferCertificate({
+      name,
+      startYear: parseInt(startYear),
+      endYear: parseInt(endYear),
+      pdfId,
+      filename,
+      originalName
+    });
+    
+    await transferCertificate.save();
+    
+    res.json(transferCertificate);
+  } catch (error) {
+    console.error('Error adding transfer certificate:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Get all transfer certificates (sorted by endYear desc, then name asc)
+app.get('/api/transfer-certificates', async (req, res) => {
+  try {
+    const certificates = await TransferCertificate.find()
+      .sort({ 
+        endYear: -1,  // Most recent endYear first
+        name: 1       // Then alphabetical by name
+      });
+    
+    res.json(certificates);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Get transfer certificates for admin (with additional details)
+app.get('/api/admin/transfer-certificates', authenticateToken, async (req, res) => {
+  try {
+    const certificates = await TransferCertificate.find()
+      .sort({ 
+        uploadDate: -1  // Most recently uploaded first for admin
+      });
+    
+    res.json(certificates);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Update transfer certificate
+app.put('/api/transfer-certificates/:id', authenticateToken, async (req, res) => {
+  try {
+    const { name, startYear, endYear, pdfId, filename, originalName } = req.body;
+    
+    const certificate = await TransferCertificate.findById(req.params.id);
+    if (!certificate) {
+      return res.status(404).json({ message: 'Transfer certificate not found' });
+    }
+    
+    // If PDF is being updated, delete the old one
+    if (pdfId && certificate.pdfId.toString() !== pdfId) {
+      await PDF.findByIdAndDelete(certificate.pdfId);
+    }
+    
+    certificate.name = name || certificate.name;
+    certificate.startYear = startYear ? parseInt(startYear) : certificate.startYear;
+    certificate.endYear = endYear ? parseInt(endYear) : certificate.endYear;
+    
+    if (pdfId) {
+      certificate.pdfId = pdfId;
+      certificate.filename = filename;
+      certificate.originalName = originalName;
+    }
+    
+    await certificate.save();
+    
+    res.json(certificate);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Delete transfer certificate
+app.delete('/api/transfer-certificates/:id', authenticateToken, async (req, res) => {
+  try {
+    const certificate = await TransferCertificate.findById(req.params.id);
+    if (!certificate) {
+      return res.status(404).json({ message: 'Transfer certificate not found' });
+    }
+    
+    // Delete the associated PDF
+    await PDF.findByIdAndDelete(certificate.pdfId);
+    
+    // Delete the certificate record
+    await TransferCertificate.findByIdAndDelete(req.params.id);
+    
+    res.json({ message: 'Transfer certificate deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// NOTIFICATION/CIRCULAR ROUTES
+// Add notification/circular
+app.post('/api/notifications', authenticateToken, async (req, res) => {
+  try {
+    const { title, date, pdfId, filename, originalName } = req.body;
+    
+    if (!title || !date || !pdfId) {
+      return res.status(400).json({ message: 'Title, date, and PDF are required' });
+    }
+    
+    const notification = new Notification({
+      title,
+      date: new Date(date),
+      pdfId,
+      filename,
+      originalName
+    });
+    
+    await notification.save();
+    
+    res.json(notification);
+  } catch (error) {
+    console.error('Error adding notification:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Get all notifications (sorted by date desc - newest first)
+app.get('/api/notifications', async (req, res) => {
+  try {
+    const notifications = await Notification.find()
+      .sort({ 
+        date: -1  // Most recent date first
+      });
+    
+    res.json(notifications);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Get notifications for admin (with additional details)
+app.get('/api/admin/notifications', authenticateToken, async (req, res) => {
+  try {
+    const notifications = await Notification.find()
+      .sort({ 
+        uploadDate: -1  // Most recently uploaded first for admin
+      });
+    
+    res.json(notifications);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Update notification
+app.put('/api/notifications/:id', authenticateToken, async (req, res) => {
+  try {
+    const { title, date, pdfId, filename, originalName } = req.body;
+    
+    const notification = await Notification.findById(req.params.id);
+    if (!notification) {
+      return res.status(404).json({ message: 'Notification not found' });
+    }
+    
+    // If PDF is being updated, delete the old one
+    if (pdfId && notification.pdfId.toString() !== pdfId) {
+      await PDF.findByIdAndDelete(notification.pdfId);
+    }
+    
+    notification.title = title || notification.title;
+    notification.date = date ? new Date(date) : notification.date;
+    
+    if (pdfId) {
+      notification.pdfId = pdfId;
+      notification.filename = filename;
+      notification.originalName = originalName;
+    }
+    
+    await notification.save();
+    
+    res.json(notification);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Delete notification
+app.delete('/api/notifications/:id', authenticateToken, async (req, res) => {
+  try {
+    const notification = await Notification.findById(req.params.id);
+    if (!notification) {
+      return res.status(404).json({ message: 'Notification not found' });
+    }
+    
+    // Delete the associated PDF
+    await PDF.findByIdAndDelete(notification.pdfId);
+    
+    // Delete the notification record
+    await Notification.findByIdAndDelete(req.params.id);
+    
+    res.json({ message: 'Notification deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
