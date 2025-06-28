@@ -137,6 +137,8 @@ const HomePage = () => {
   if (error) return <div className="text-red-500 text-center py-10">{error}</div>;
   if (!content) return <div className="text-center py-10">No content available</div>;
 
+  console.log(process.env.REACT_APP_API_URL);
+
   return (
     <div className="min-h-screen font-sans">
       {/* Fullscreen Auto-scrolling Gallery */}
