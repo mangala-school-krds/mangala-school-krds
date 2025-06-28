@@ -178,7 +178,7 @@ const Navbar = () => {
     { path: '/admissions', label: 'Admissions' },
     { path: '/academic-corner', label: 'Academic Corner' },
     { path: '/gallery', label: 'Gallery' },
-    { path: '/news', label: 'News' },
+    { path: '/eventsnews', label: 'Events & News' },
     { path: '/mandatory-public-disclosure', label: 'Mandatory Public Disclosure' },
     { path: '/notifications-circular', label: 'Notifications & Circular' },
     { path: '/contact', label: 'Contact Us' },

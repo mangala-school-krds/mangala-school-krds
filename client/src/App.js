@@ -62,13 +62,13 @@ import Alumni from './components/Alumni';
 import Admission from './components/Admission';
 import AcademicCorner from './components/AcademicCorner';
 import Gallery from './components/Gallery';
-import News from './components/News';
 import MandatoryPublicDisclosure from './components/MandatoryPublicDisclosure';
 import NotificationsCircular from './components/NotificationsCircular';
 import Result from './components/Result';
 import Contact from './components/Contact';
 import './App.css';
 import Footer from './components/Footer';
+import EventsNews from './components/EventsNews';
 
 function App() {
   return (
@@ -92,7 +92,7 @@ function App() {
                 <Route path="/admissions" element={<Admission />} />
                 <Route path="/academic-corner" element={<AcademicCorner />} />
                 <Route path="/gallery" element={<Gallery />} />
-                <Route path="/news" element={<News />} />
+                <Route path="/eventsnews" element={<EventsNews />} />
                 <Route path="/mandatory-public-disclosure" element={<MandatoryPublicDisclosure />} />
                 <Route path="/notifications-circular" element={<NotificationsCircular />} />
                 <Route path="/contact" element={<Contact />} />

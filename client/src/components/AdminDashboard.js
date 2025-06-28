@@ -15,6 +15,16 @@ const AdminDashboard = () => {
     location: '',
     image: null 
   });
+  const [newNews, setNewNews] = useState({ 
+    title: '', 
+    description: '', 
+    publishDate: '', 
+    expiryDate: '', 
+    priority: 'medium',
+    image: null 
+  });
+  const [newsImageFile, setNewsImageFile] = useState(null);
+  const [editingNews, setEditingNews] = useState(null);
   const [eventImageFile, setEventImageFile] = useState(null);
   const [editingEvent, setEditingEvent] = useState(null);
   const [newGalleryItem, setNewGalleryItem] = useState({ caption: '' });
@@ -216,6 +226,86 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('Error deleting event image:', error);
       alert('Failed to delete event image');
+    }
+  };
+
+  const addNews = async () => {
+    if (!newNews.title || !newNews.description) {
+      alert('Please fill all required news fields (title, description)');
+      return;
+    }
+
+    try {
+      let newsData = { ...newNews };
+      
+      // Upload image if provided
+      if (newsImageFile) {
+        const uploadResponse = await uploadImage(newsImageFile);
+        newsData.image = uploadResponse;
+      }
+
+      const response = await axios.post('/api/news', newsData);
+      setContent({ ...content, news: response.data });
+      setNewNews({ title: '', description: '', publishDate: '', expiryDate: '', priority: 'medium', image: null });
+      setNewsImageFile(null);
+      // Reset file input
+      const fileInput = document.getElementById('newsImageUpload');
+      if (fileInput) fileInput.value = '';
+    } catch (error) {
+      console.error('Error adding news:', error);
+      alert('Failed to add news');
+    }
+  };
+
+  const updateNews = async () => {
+    if (!editingNews.title || !editingNews.description) {
+      alert('Please fill all required news fields (title, description)');
+      return;
+    }
+
+    try {
+      let newsData = { ...editingNews };
+      
+      // Upload new image if provided
+      if (newsImageFile) {
+        const uploadResponse = await uploadImage(newsImageFile);
+        newsData.image = uploadResponse;
+      }
+
+      const response = await axios.put(`/api/news/${editingNews._id}`, newsData);
+      setContent({ ...content, news: response.data });
+      setEditingNews(null);
+      setNewsImageFile(null);
+      // Reset file input
+      const fileInput = document.getElementById('editNewsImageUpload');
+      if (fileInput) fileInput.value = '';
+    } catch (error) {
+      console.error('Error updating news:', error);
+      alert('Failed to update news');
+    }
+  };
+
+  const deleteNews = async (newsId) => {
+    if (!window.confirm('Are you sure you want to delete this news item?')) return;
+
+    try {
+      const response = await axios.delete(`/api/news/${newsId}`);
+      setContent({ ...content, news: response.data });
+    } catch (error) {
+      console.error('Error deleting news:', error);
+      alert('Failed to delete news');
+    }
+  };
+
+  const deleteNewsImage = async (newsId) => {
+    if (!window.confirm('Are you sure you want to delete this news image?')) return;
+
+    try {
+      const response = await axios.delete(`/api/news/${newsId}/image`);
+      setContent({ ...content, news: response.data });
+    } catch (error) {
+      console.error('Error deleting news image:', error);
+      alert('Failed to delete news image');
     }
   };
 
@@ -665,6 +755,219 @@ const AdminDashboard = () => {
             )}
           </div>
         </section>
+
+        {/* News Section */}
+          <section className="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-6">News Management</h2>
+            
+            {/* Add News Form */}
+            <div className="bg-gray-50 rounded-lg p-6 mb-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Add New News</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <input
+                  type="text"
+                  placeholder="News Title *"
+                  value={newNews.title}
+                  onChange={(e) => setNewNews({...newNews, title: e.target.value})}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <select
+                  value={newNews.priority}
+                  onChange={(e) => setNewNews({...newNews, priority: e.target.value})}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="low">Low Priority</option>
+                  <option value="medium">Medium Priority</option>
+                  <option value="high">High Priority</option>
+                </select>
+                <input
+                  type="date"
+                  placeholder="Publish Date"
+                  value={newNews.publishDate}
+                  onChange={(e) => setNewNews({...newNews, publishDate: e.target.value})}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <input
+                  type="date"
+                  placeholder="Expiry Date (Optional)"
+                  value={newNews.expiryDate}
+                  onChange={(e) => setNewNews({...newNews, expiryDate: e.target.value})}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <textarea
+                placeholder="News Description *"
+                value={newNews.description}
+                onChange={(e) => setNewNews({...newNews, description: e.target.value})}
+                rows="3"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+              />
+              <div className="flex flex-wrap gap-4 items-center">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setNewsImageFile(e.target.files[0])}
+                  id="newsImageUpload"
+                  className="hidden"
+                />
+                <label 
+                  htmlFor="newsImageUpload"
+                  className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors cursor-pointer"
+                >
+                  Choose News Image
+                </label>
+                {newsImageFile && (
+                  <span className="text-sm text-gray-600">{newsImageFile.name}</span>
+                )}
+                <button 
+                  onClick={addNews}
+                  className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  Add News
+                </button>
+              </div>
+            </div>
+
+            {/* News List */}
+            <div className="space-y-6">
+              {content.news && content.news.length > 0 ? (
+                content.news.map((newsItem, index) => (
+                  <div key={newsItem._id || index} className="border border-gray-200 rounded-lg p-6">
+                    {editingNews && editingNews._id === newsItem._id ? (
+                      // Edit Form
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <input
+                            type="text"
+                            value={editingNews.title}
+                            onChange={(e) => setEditingNews({...editingNews, title: e.target.value})}
+                            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                          <select
+                            value={editingNews.priority || 'medium'}
+                            onChange={(e) => setEditingNews({...editingNews, priority: e.target.value})}
+                            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            <option value="low">Low Priority</option>
+                            <option value="medium">Medium Priority</option>
+                            <option value="high">High Priority</option>
+                          </select>
+                          <input
+                            type="date"
+                            value={editingNews.publishDate ? editingNews.publishDate.split('T')[0] : ''}
+                            onChange={(e) => setEditingNews({...editingNews, publishDate: e.target.value})}
+                            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                          <input
+                            type="date"
+                            placeholder="Expiry Date (Optional)"
+                            value={editingNews.expiryDate ? editingNews.expiryDate.split('T')[0] : ''}
+                            onChange={(e) => setEditingNews({...editingNews, expiryDate: e.target.value})}
+                            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+                        <textarea
+                          value={editingNews.description}
+                          onChange={(e) => setEditingNews({...editingNews, description: e.target.value})}
+                          rows="3"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <div className="flex flex-wrap gap-4 items-center">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => setNewsImageFile(e.target.files[0])}
+                            id="editNewsImageUpload"
+                            className="hidden"
+                          />
+                          <label 
+                            htmlFor="editNewsImageUpload"
+                            className="bg-green-600 text-white px-3 py-1 rounded-md hover:bg-green-700 transition-colors cursor-pointer text-sm"
+                          >
+                            Change Image
+                          </label>
+                          {newsImageFile && (
+                            <span className="text-sm text-gray-600">{newsImageFile.name}</span>
+                          )}
+                          <button 
+                            onClick={updateNews}
+                            className="bg-blue-600 text-white px-4 py-1 rounded-md text-sm hover:bg-blue-700 transition-colors"
+                          >
+                            Save Changes
+                          </button>
+                          <button 
+                            onClick={() => {
+                              setEditingNews(null);
+                              setNewsImageFile(null);
+                            }}
+                            className="bg-gray-600 text-white px-4 py-1 rounded-md text-sm hover:bg-gray-700 transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      // Display News
+                      <div className="flex flex-col lg:flex-row gap-6">
+                        {newsItem.image && newsItem.image.imageId && (
+                          <div className="lg:w-1/3">
+                            <img 
+                              src={getImageUrl(newsItem.image)} 
+                              alt={newsItem.title}
+                              className="w-full h-48 object-cover rounded-md"
+                            />
+                            <button 
+                              onClick={() => deleteNewsImage(newsItem._id)}
+                              className="mt-2 w-full bg-red-600 text-white py-1 px-2 rounded-md text-sm hover:bg-red-700 transition-colors"
+                            >
+                              Remove Image
+                            </button>
+                          </div>
+                        )}
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <h3 className="text-xl font-medium text-gray-900">{newsItem.title}</h3>
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              newsItem.priority === 'high' ? 'bg-red-100 text-red-800' :
+                              newsItem.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-green-100 text-green-800'
+                            }`}>
+                              {newsItem.priority?.toUpperCase() || 'MEDIUM'}
+                            </span>
+                          </div>
+                          <div className="text-sm text-gray-600 mb-2 space-y-1">
+                            {newsItem.publishDate && (
+                              <div>📅 Published: {new Date(newsItem.publishDate).toLocaleDateString()}</div>
+                            )}
+                            {newsItem.expiryDate && (
+                              <div>⏰ Expires: {new Date(newsItem.expiryDate).toLocaleDateString()}</div>
+                            )}
+                          </div>
+                          <p className="text-gray-700 mb-4">{newsItem.description}</p>
+                          <div className="flex flex-wrap gap-2">
+                            <button 
+                              onClick={() => setEditingNews(newsItem)}
+                              className="bg-blue-600 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-700 transition-colors"
+                            >
+                              Edit
+                            </button>
+                            <button 
+                              onClick={() => deleteNews(newsItem._id)}
+                              className="bg-red-600 text-white px-3 py-1 rounded-md text-sm hover:bg-red-700 transition-colors"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-600">No news available</p>
+              )}
+            </div>
+          </section>
 
         {/* Home Gallery Section */}
         <section className="bg-white rounded-lg shadow-md p-6 mb-8">
