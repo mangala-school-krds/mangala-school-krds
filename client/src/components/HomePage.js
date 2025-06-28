@@ -122,7 +122,7 @@ const HomePage = () => {
 
   const fetchContent = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/content');
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/content`);
       setContent(response.data);
       setLoading(false);
     } catch (error) {
@@ -131,7 +131,7 @@ const HomePage = () => {
     }
   };
 
-  const getImageUrl = (img) => img?.imageId ? `http://localhost:5000/api/image/${img.imageId}` : null;
+  const getImageUrl = (img) => img?.imageId ? `${process.env.REACT_APP_API_URL}/api/image/${img.imageId}` : null;
 
   if (loading) return <div className="text-center py-10">Loading...</div>;
   if (error) return <div className="text-red-500 text-center py-10">{error}</div>;
