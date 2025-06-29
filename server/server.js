@@ -1671,6 +1671,13 @@ app.delete('/api/notifications/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// Serve frontend build
+app.use(express.static(path.join(__dirname, 'client/build')));
+
+app.get(/.*/, (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/build/index.html'));
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
