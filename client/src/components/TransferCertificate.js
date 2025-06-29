@@ -286,7 +286,7 @@ const TransferCertificate = () => {
           </div>
         </section>
 
-        <section className="bg-white p-6 rounded-xl shadow">
+        {/* <section className="bg-white p-6 rounded-xl shadow">
           <h2 className="text-2xl font-semibold mb-4 text-gray-800">Transfer Certificate Request Form</h2>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
@@ -417,7 +417,7 @@ const TransferCertificate = () => {
               Submit Request
             </button>
           </form>
-        </section>
+        </section> */}
       </div>
     </div>
   );
