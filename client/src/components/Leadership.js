@@ -136,7 +136,7 @@ const Leadership = () => {
             {/* Temporary */}
             <div className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col md:flex-row items-center p-6">
               <img
-                src="../assets/honorary_president.jpg" // replace with real image later
+                src="https://res.cloudinary.com/daja3mrty/image/upload/v1751172668/honorary_president_igej3e.jpg" // replace with real image later
                 alt="Vice Principal"
                 className="w-32 h-32 object-cover rounded-full mb-4 md:mb-0 md:mr-6 border-4 border-blue-600"
               />
