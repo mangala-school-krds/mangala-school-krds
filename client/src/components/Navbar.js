@@ -122,7 +122,7 @@ const Navbar = () => {
 
   const fetchLogos = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/content');
+      const response = await axios.get('/api/content');
       setLogos(response.data.logos || []);
     } catch (err) {
       console.error('Failed to fetch logos:', err);
@@ -131,7 +131,7 @@ const Navbar = () => {
 
   const getImageUrl = (imageData) => {
     if (!imageData || !imageData.imageId) return null;
-    return `http://localhost:5000/api/image/${imageData.imageId}`;
+    return `/api/image/${imageData.imageId}`;
   };
 
   const toggleMenu = () => {

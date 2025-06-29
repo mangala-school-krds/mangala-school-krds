@@ -13,7 +13,7 @@ const Gallery = () => {
 
   const fetchGallery = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/content');
+      const response = await fetch('/api/content');
       if (response.ok) {
         const data = await response.json();
         setGalleryItems(data.gallery || []);
@@ -75,7 +75,7 @@ const Gallery = () => {
     >
       <div className="relative overflow-hidden">
         <img
-          src={`http://localhost:5000/api/image/${item.imageId}`}
+          src={`/api/image/${item.imageId}`}
           alt={item.caption || 'Gallery image'}
           className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
           loading="lazy"
@@ -178,7 +178,7 @@ const Gallery = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <img
-                src={`http://localhost:5000/api/image/${selectedImage.imageId}`}
+                src={`/api/image/${selectedImage.imageId}`}
                 alt={selectedImage.caption || 'Gallery image'}
                 className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
               />

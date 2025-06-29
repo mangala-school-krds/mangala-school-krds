@@ -15,8 +15,8 @@ const EventsNews = () => {
   const fetchEventsAndNews = async () => {
     try {
       const [eventsResponse, newsResponse] = await Promise.all([
-        fetch('http://localhost:5000/api/events'),
-        fetch('http://localhost:5000/api/news')
+        fetch('/api/events'),
+        fetch('/api/news')
       ]);
       
       if (eventsResponse.ok) {
@@ -103,7 +103,7 @@ const EventsNews = () => {
           
           {newsItem.image?.imageId && (
             <img
-              src={`http://localhost:5000/api/image/${newsItem.image.imageId}`}
+              src={`/api/image/${newsItem.image.imageId}`}
               alt={newsItem.title}
               className="w-full h-48 object-cover rounded mb-3"
               loading="lazy"
@@ -152,7 +152,7 @@ const EventsNews = () => {
           <div className="flex-1 p-4">
             {event.image?.imageId && (
               <img
-                src={`http://localhost:5000/api/image/${event.image.imageId}`}
+                src={`/api/image/${event.image.imageId}`}
                 alt={event.title}
                 className="w-full h-48 object-cover rounded mb-2"
                 loading="lazy"
@@ -205,7 +205,7 @@ const EventsNews = () => {
           <div className="p-4">
             {item.image?.imageId && (
               <img
-                src={`http://localhost:5000/api/image/${item.image.imageId}`}
+                src={`/api/image/${item.image.imageId}`}
                 alt={item.title}
                 className="w-full h-64 object-cover rounded mb-4"
               />

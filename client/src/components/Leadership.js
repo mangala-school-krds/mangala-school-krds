@@ -124,7 +124,7 @@ const Leadership = () => {
 
   const fetchContent = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/content');
+      const response = await axios.get('/api/content');
       setContent(response.data);
       setLoading(false);
     } catch (error) {
@@ -136,7 +136,7 @@ const Leadership = () => {
 
   const getImageUrl = (imageData) => {
     if (!imageData || !imageData.imageId) return null;
-    return `http://localhost:5000/api/image/${imageData.imageId}`;
+    return `/api/image/${imageData.imageId}`;
   };
 
   if (loading) {
