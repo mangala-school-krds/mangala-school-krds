@@ -113,6 +113,8 @@ import { FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa';
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAboutDropdownOpen, setIsAboutDropdownOpen] = useState(false);
+  const [isMobileAboutOpen, setIsMobileAboutOpen] = useState(false);
+
   const [logos, setLogos] = useState([]);
   const location = useLocation();
 
@@ -276,7 +278,7 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Menu */}
-        {isMenuOpen && (
+        {/* {isMenuOpen && (
           <ul className="md:hidden mt-4 space-y-2">
             {navItems.map((item) =>
               item.dropdown ? (
@@ -316,7 +318,50 @@ const Navbar = () => {
               )
             )}
           </ul>
+        )} */}
+        {/* Updated Mobile Menu */}
+        {isMenuOpen && (
+          <ul className="md:hidden mt-4 space-y-2">
+            {navItems.map((item) =>
+              item.dropdown ? (
+                <div key={item.label}>
+                  <button 
+                    onClick={() => setIsMobileAboutOpen(!isMobileAboutOpen)} 
+                    className="block w-full text-left hover:text-yellow-400"
+                  >
+                    {item.label} {isMobileAboutOpen ? '▲' : '▼'}
+                  </button>
+                  {isMobileAboutOpen && (
+                    <ul className="pl-4 mt-2 space-y-1">
+                      {item.dropdown.map((subItem) => (
+                        <li key={subItem.path}>
+                          <Link
+                            to={subItem.path}
+                            onClick={closeMenu}
+                            className="block py-1 hover:text-yellow-400"
+                          >
+                            {subItem.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ) : (
+                <li key={item.path}>
+                  <Link 
+                    to={item.path} 
+                    onClick={closeMenu} 
+                    className="block hover:text-yellow-400"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              )
+            )}
+          </ul>
         )}
+
       </nav>
     </>
   );
