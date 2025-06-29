@@ -40,7 +40,7 @@ const AdminDashboard = () => {
     }
 
     // Set base URL and auth header
-    axios.defaults.baseURL = 'http://localhost:5000';
+    axios.defaults.baseURL = '';
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     fetchContent();
   }, [navigate]);
@@ -387,7 +387,7 @@ const AdminDashboard = () => {
 
   const getImageUrl = (imageData) => {
     if (!imageData || !imageData.imageId) return null;
-    return `http://localhost:5000/api/image/${imageData.imageId}`;
+    return `/api/image/${imageData.imageId}`;
   };
 
   const logout = () => {

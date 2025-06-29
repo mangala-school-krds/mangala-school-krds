@@ -103,7 +103,7 @@ const AdminLogin = () => {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:5000/api/admin/login', credentials);
+      const response = await axios.post('/api/admin/login', credentials);
       localStorage.setItem('adminToken', response.data.token);
       navigate('/admin/dashboard');
     } catch (error) {
@@ -119,7 +119,7 @@ const AdminLogin = () => {
 
   const createAdmin = async () => {
     try {
-      await axios.post('http://localhost:5000/api/admin/create', {
+      await axios.post('/api/admin/create', {
         username: 'admin',
         password: 'admin123'
       });
