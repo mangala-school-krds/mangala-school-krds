@@ -277,48 +277,6 @@ const Navbar = () => {
           </ul>
         </div>
 
-        {/* Mobile Menu */}
-        {/* {isMenuOpen && (
-          <ul className="md:hidden mt-4 space-y-2">
-            {navItems.map((item) =>
-              item.dropdown ? (
-                <div key={item.label}>
-                  <button 
-                    onClick={toggleAboutDropdown} 
-                    className="block w-full text-left hover:text-yellow-400"
-                  >
-                    {item.label} {isAboutDropdownOpen ? '▲' : '▼'}
-                  </button>
-                  {isAboutDropdownOpen && (
-                    <ul className="pl-4 mt-2 space-y-1">
-                      {item.dropdown.map((subItem) => (
-                        <li key={subItem.path}>
-                          <Link
-                            to={subItem.path}
-                            onClick={closeMenu}
-                            className="block py-1 hover:text-yellow-400"
-                          >
-                            {subItem.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              ) : (
-                <li key={item.path}>
-                  <Link 
-                    to={item.path} 
-                    onClick={closeMenu} 
-                    className="block hover:text-yellow-400"
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              )
-            )}
-          </ul>
-        )} */}
         {/* Updated Mobile Menu */}
         {isMenuOpen && (
           <ul className="md:hidden mt-4 space-y-2">
