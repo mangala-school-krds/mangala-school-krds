@@ -250,7 +250,7 @@ const Leadership = () => {
             {[
               { key: 'correspondent', title: 'Correspondent', field: 'correspondentMessage', name: 'Shekar Moily Padebettu' },
               { key: 'headmistress', title: 'Headmistress', field: 'headmistressMessage', name: 'Jayalaxmi' },
-              { key: 'president', title: 'President', field: 'presidentMessage', name: '' },
+              { key: 'president', title: 'President', field: 'presidentMessage', name: 'Ashok Moily' },
               { key: 'secretary', title: 'Secretary', field: 'secretaryMessage', name: 'Veena Ganesh' }
             ].map(({ key, title, field, name }) => (
               <div
