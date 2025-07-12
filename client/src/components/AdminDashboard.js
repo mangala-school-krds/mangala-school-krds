@@ -540,7 +540,7 @@ const AdminDashboard = () => {
               { key: 'secretary', label: 'Secretary' },
               { key: 'correspondent', label: 'Correspondent' },
               { key: 'headmistress', label: 'Headmistress' },
-              { key: 'honorarypresident', label: 'Honorary President' }
+              { key: 'honoraryPresident', label: 'Honorary President' }
             ].map(({ key, label }) => (
               <div key={key} className="border border-gray-200 rounded-lg p-6">
                 <h3 className="text-lg font-medium text-gray-900 mb-4">{label}</h3>
