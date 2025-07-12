@@ -23,6 +23,8 @@ const AdminDashboard = () => {
     priority: 'medium',
     image: null 
   });
+  const [alumni, setAlumni] = useState([]);
+  const [loadingAlumni, setLoadingAlumni] = useState(false);
   const [newsImageFile, setNewsImageFile] = useState(null);
   const [editingNews, setEditingNews] = useState(null);
   const [eventImageFile, setEventImageFile] = useState(null);
@@ -43,6 +45,7 @@ const AdminDashboard = () => {
     axios.defaults.baseURL = '';
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     fetchContent();
+    fetchAlumni();
   }, [navigate]);
 
   const fetchContent = async () => {
@@ -385,6 +388,43 @@ const AdminDashboard = () => {
     }
   };
 
+  const fetchAlumni = async () => {
+    setLoadingAlumni(true);
+    try {
+      const response = await axios.get('/api/admin/alumni');
+      setAlumni(response.data);
+    } catch (error) {
+      console.error('Error fetching alumni:', error);
+      setError('Failed to load alumni data');
+    } finally {
+      setLoadingAlumni(false);
+    }
+  };
+
+  const approveAlumni = async (alumniId, isApproved) => {
+    try {
+      await axios.put(`/api/alumni/${alumniId}/approve`, { isApproved });
+      // Refresh alumni list
+      fetchAlumni();
+    } catch (error) {
+      console.error('Error updating alumni approval:', error);
+      alert('Failed to update alumni approval');
+    }
+  };
+
+  const deleteAlumni = async (alumniId) => {
+    if (!window.confirm('Are you sure you want to delete this alumni record?')) return;
+
+    try {
+      await axios.delete(`/api/alumni/${alumniId}`);
+      // Refresh alumni list
+      fetchAlumni();
+    } catch (error) {
+      console.error('Error deleting alumni:', error);
+      alert('Failed to delete alumni');
+    }
+  };
+
   const getImageUrl = (imageData) => {
     if (!imageData || !imageData.imageId) return null;
     return `/api/image/${imageData.imageId}`;
@@ -499,7 +539,8 @@ const AdminDashboard = () => {
               { key: 'president', label: 'President' },
               { key: 'secretary', label: 'Secretary' },
               { key: 'correspondent', label: 'Correspondent' },
-              { key: 'headmistress', label: 'Headmistress' }
+              { key: 'headmistress', label: 'Headmistress' },
+              { key: 'honorarypresident', label: 'Honorary President' }
             ].map(({ key, label }) => (
               <div key={key} className="border border-gray-200 rounded-lg p-6">
                 <h3 className="text-lg font-medium text-gray-900 mb-4">{label}</h3>
@@ -1077,6 +1118,89 @@ const AdminDashboard = () => {
               <p className="text-gray-600 col-span-full">No gallery items available</p>
             )}
           </div>
+        </section>
+
+         {/* Alumni Management Section */}
+        <section className="bg-white rounded-lg shadow-md p-6 mt-8">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Alumni Management</h2>
+          
+          {loadingAlumni ? (
+            <div className="text-center py-8">
+              <div className="text-lg text-gray-600">Loading alumni...</div>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {alumni && alumni.length > 0 ? (
+                alumni.map((alumniItem, index) => (
+                  <div key={alumniItem._id || index} className="border border-gray-200 rounded-lg p-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                          {alumniItem.fullName}
+                          <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
+                            alumniItem.isApproved ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {alumniItem.isApproved ? 'APPROVED' : 'PENDING'}
+                          </span>
+                        </h3>
+                        <div className="space-y-2 text-sm text-gray-600">
+                          <div><strong>Gender:</strong> {alumniItem.gender}</div>
+                          <div><strong>Mobile:</strong> {alumniItem.mobile}</div>
+                          <div><strong>Email:</strong> {alumniItem.email}</div>
+                          <div><strong>Address:</strong> {alumniItem.address}</div>
+                          <div><strong>Period of Study:</strong> {alumniItem.periodOfStudy}</div>
+                        </div>
+                      </div>
+                      <div>
+                        <div className="space-y-2 text-sm text-gray-600">
+                          <div><strong>Qualification:</strong> {alumniItem.qualification}</div>
+                          <div><strong>Occupation:</strong> {alumniItem.occupation}</div>
+                          {alumniItem.companyName && (
+                            <div><strong>Company:</strong> {alumniItem.companyName}</div>
+                          )}
+                          {alumniItem.companyAddress && (
+                            <div><strong>Company Address:</strong> {alumniItem.companyAddress}</div>
+                          )}
+                          <div><strong>Registered:</strong> {new Date(alumniItem.registrationDate).toLocaleDateString()}</div>
+                        </div>
+                        {alumniItem.message && (
+                          <div className="mt-3">
+                            <strong className="text-sm text-gray-700">Message:</strong>
+                            <p className="text-sm text-gray-600 mt-1">{alumniItem.message}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {!alumniItem.isApproved ? (
+                        <button 
+                          onClick={() => approveAlumni(alumniItem._id, true)}
+                          className="bg-green-600 text-white px-4 py-2 rounded-md text-sm hover:bg-green-700 transition-colors"
+                        >
+                          Approve
+                        </button>
+                      ) : (
+                        <button 
+                          onClick={() => approveAlumni(alumniItem._id, false)}
+                          className="bg-yellow-600 text-white px-4 py-2 rounded-md text-sm hover:bg-yellow-700 transition-colors"
+                        >
+                          Unapprove
+                        </button>
+                      )}
+                      <button 
+                        onClick={() => deleteAlumni(alumniItem._id)}
+                        className="bg-red-600 text-white px-4 py-2 rounded-md text-sm hover:bg-red-700 transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-600 text-center py-8">No alumni registrations yet</p>
+              )}
+            </div>
+          )}
         </section>
       </div>
 

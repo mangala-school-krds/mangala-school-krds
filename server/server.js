@@ -735,16 +735,16 @@ const PDFSchema = new mongoose.Schema({
   uploadDate: { type: Date, default: Date.now }
 });
 
-// Transfer Certificate Schema
-const TransferCertificateSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  startYear: { type: Number, required: true },
-  endYear: { type: Number, required: true },
-  pdfId: { type: mongoose.Schema.Types.ObjectId, ref: 'PDF', required: true },
-  filename: { type: String, required: true },
-  originalName: { type: String, required: true },
-  uploadDate: { type: Date, default: Date.now }
-});
+// // Transfer Certificate Schema
+// const TransferCertificateSchema = new mongoose.Schema({
+//   name: { type: String, required: true },
+//   startYear: { type: Number, required: true },
+//   endYear: { type: Number, required: true },
+//   pdfId: { type: mongoose.Schema.Types.ObjectId, ref: 'PDF', required: true },
+//   filename: { type: String, required: true },
+//   originalName: { type: String, required: true },
+//   uploadDate: { type: Date, default: Date.now }
+// });
 
 // Notification/Circular Schema
 const NotificationSchema = new mongoose.Schema({
@@ -754,6 +754,23 @@ const NotificationSchema = new mongoose.Schema({
   filename: { type: String, required: true },
   originalName: { type: String, required: true },
   uploadDate: { type: Date, default: Date.now }
+});
+
+// Alumni Schema
+const AlumniSchema = new mongoose.Schema({
+  fullName: { type: String, required: true },
+  gender: { type: String, required: true, enum: ['male', 'female'] },
+  mobile: { type: String, required: true },
+  email: { type: String, required: true },
+  address: { type: String, required: true },
+  periodOfStudy: { type: String, required: true },
+  qualification: { type: String, required: true },
+  occupation: { type: String, required: true },
+  companyName: { type: String },
+  companyAddress: { type: String },
+  message: { type: String },
+  registrationDate: { type: Date, default: Date.now },
+  isApproved: { type: Boolean, default: false }
 });
 
 const ContentSchema = new mongoose.Schema({
@@ -766,6 +783,7 @@ const ContentSchema = new mongoose.Schema({
   secretaryMessage: String,
   correspondentMessage: String,
   headmistressMessage: String,
+  honoraryPresidentMessage: String,
   presidentImage: { 
     imageId: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' },
     filename: String,
@@ -782,6 +800,11 @@ const ContentSchema = new mongoose.Schema({
     originalName: String
   },
   headmistressImage: { 
+    imageId: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' },
+    filename: String,
+    originalName: String
+  },
+  honoraryPresidentImage: {
     imageId: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' },
     filename: String,
     originalName: String
@@ -831,9 +854,10 @@ const ContentSchema = new mongoose.Schema({
 const Admin = mongoose.model('Admin', AdminSchema);
 const Image = mongoose.model('Image', ImageSchema);
 const PDF = mongoose.model('PDF', PDFSchema);
-const TransferCertificate = mongoose.model('TransferCertificate', TransferCertificateSchema);
+// const TransferCertificate = mongoose.model('TransferCertificate', TransferCertificateSchema);
 const Notification = mongoose.model('Notification', NotificationSchema);
 const Content = mongoose.model('Content', ContentSchema);
+const Alumni = mongoose.model('Alumni', AlumniSchema);
 
 // Multer configuration for memory storage
 const storage = multer.memoryStorage();
@@ -921,6 +945,7 @@ app.get('/api/content', async (req, res) => {
         secretaryMessage: 'Quality education for all',
         correspondentMessage: 'Building future leaders',
         headmistressMessage: 'Excellence in education',
+        honoraryPresidentMessage: 'Honorary message',
         programme: 'Our academic programs',
         logos: [],
         events: [],
@@ -1454,111 +1479,216 @@ app.delete('/api/homegallery/:id', authenticateToken, async (req, res) => {
   }
 });
 
-// TRANSFER CERTIFICATE ROUTES
-// Add transfer certificate
-app.post('/api/transfer-certificates', authenticateToken, async (req, res) => {
-  try {
-    const { name, startYear, endYear, pdfId, filename, originalName } = req.body;
+// // TRANSFER CERTIFICATE ROUTES
+// // Add transfer certificate
+// app.post('/api/transfer-certificates', authenticateToken, async (req, res) => {
+//   try {
+//     const { name, startYear, endYear, pdfId, filename, originalName } = req.body;
     
-    if (!name || !startYear || !endYear || !pdfId) {
-      return res.status(400).json({ message: 'All fields are required' });
+//     if (!name || !startYear || !endYear || !pdfId) {
+//       return res.status(400).json({ message: 'All fields are required' });
+//     }
+    
+//     const transferCertificate = new TransferCertificate({
+//       name,
+//       startYear: parseInt(startYear),
+//       endYear: parseInt(endYear),
+//       pdfId,
+//       filename,
+//       originalName
+//     });
+    
+//     await transferCertificate.save();
+    
+//     res.json(transferCertificate);
+//   } catch (error) {
+//     console.error('Error adding transfer certificate:', error);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+// // Get all transfer certificates (sorted by endYear desc, then name asc)
+// app.get('/api/transfer-certificates', async (req, res) => {
+//   try {
+//     const certificates = await TransferCertificate.find()
+//       .sort({ 
+//         endYear: -1,  // Most recent endYear first
+//         name: 1       // Then alphabetical by name
+//       });
+    
+//     res.json(certificates);
+//   } catch (error) {
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+// // Get transfer certificates for admin (with additional details)
+// app.get('/api/admin/transfer-certificates', authenticateToken, async (req, res) => {
+//   try {
+//     const certificates = await TransferCertificate.find()
+//       .sort({ 
+//         uploadDate: -1  // Most recently uploaded first for admin
+//       });
+    
+//     res.json(certificates);
+//   } catch (error) {
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+// // Update transfer certificate
+// app.put('/api/transfer-certificates/:id', authenticateToken, async (req, res) => {
+//   try {
+//     const { name, startYear, endYear, pdfId, filename, originalName } = req.body;
+    
+//     const certificate = await TransferCertificate.findById(req.params.id);
+//     if (!certificate) {
+//       return res.status(404).json({ message: 'Transfer certificate not found' });
+//     }
+    
+//     // If PDF is being updated, delete the old one
+//     if (pdfId && certificate.pdfId.toString() !== pdfId) {
+//       await PDF.findByIdAndDelete(certificate.pdfId);
+//     }
+    
+//     certificate.name = name || certificate.name;
+//     certificate.startYear = startYear ? parseInt(startYear) : certificate.startYear;
+//     certificate.endYear = endYear ? parseInt(endYear) : certificate.endYear;
+    
+//     if (pdfId) {
+//       certificate.pdfId = pdfId;
+//       certificate.filename = filename;
+//       certificate.originalName = originalName;
+//     }
+    
+//     await certificate.save();
+    
+//     res.json(certificate);
+//   } catch (error) {
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+// // Delete transfer certificate
+// app.delete('/api/transfer-certificates/:id', authenticateToken, async (req, res) => {
+//   try {
+//     const certificate = await TransferCertificate.findById(req.params.id);
+//     if (!certificate) {
+//       return res.status(404).json({ message: 'Transfer certificate not found' });
+//     }
+    
+//     // Delete the associated PDF
+//     await PDF.findByIdAndDelete(certificate.pdfId);
+    
+//     // Delete the certificate record
+//     await TransferCertificate.findByIdAndDelete(req.params.id);
+    
+//     res.json({ message: 'Transfer certificate deleted successfully' });
+//   } catch (error) {
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+// ALUMNI ROUTES
+// Add alumni registration
+app.post('/api/alumni', async (req, res) => {
+  try {
+    const { 
+      fullName, 
+      gender, 
+      mobile, 
+      email, 
+      address, 
+      periodOfStudy, 
+      qualification, 
+      occupation, 
+      companyName, 
+      companyAddress, 
+      message 
+    } = req.body;
+    
+    if (!fullName || !gender || !mobile || !email || !address || !periodOfStudy || !qualification || !occupation) {
+      return res.status(400).json({ message: 'All required fields must be filled' });
     }
     
-    const transferCertificate = new TransferCertificate({
-      name,
-      startYear: parseInt(startYear),
-      endYear: parseInt(endYear),
-      pdfId,
-      filename,
-      originalName
+    const alumni = new Alumni({
+      fullName,
+      gender,
+      mobile,
+      email,
+      address,
+      periodOfStudy,
+      qualification,
+      occupation,
+      companyName,
+      companyAddress,
+      message
     });
     
-    await transferCertificate.save();
+    await alumni.save();
     
-    res.json(transferCertificate);
+    res.json({ message: 'Alumni registration successful', alumni });
   } catch (error) {
-    console.error('Error adding transfer certificate:', error);
+    console.error('Error registering alumni:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Get all transfer certificates (sorted by endYear desc, then name asc)
-app.get('/api/transfer-certificates', async (req, res) => {
+// Get all alumni (for admin)
+app.get('/api/admin/alumni', authenticateToken, async (req, res) => {
   try {
-    const certificates = await TransferCertificate.find()
-      .sort({ 
-        endYear: -1,  // Most recent endYear first
-        name: 1       // Then alphabetical by name
-      });
+    const alumni = await Alumni.find()
+      .sort({ registrationDate: -1 }); // Most recent first
     
-    res.json(certificates);
+    res.json(alumni);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Get transfer certificates for admin (with additional details)
-app.get('/api/admin/transfer-certificates', authenticateToken, async (req, res) => {
+// Get approved alumni (public)
+app.get('/api/alumni', async (req, res) => {
   try {
-    const certificates = await TransferCertificate.find()
-      .sort({ 
-        uploadDate: -1  // Most recently uploaded first for admin
-      });
+    const alumni = await Alumni.find({ isApproved: true })
+      .sort({ registrationDate: -1 });
     
-    res.json(certificates);
+    res.json(alumni);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Update transfer certificate
-app.put('/api/transfer-certificates/:id', authenticateToken, async (req, res) => {
+// Update alumni approval status
+app.put('/api/alumni/:id/approve', authenticateToken, async (req, res) => {
   try {
-    const { name, startYear, endYear, pdfId, filename, originalName } = req.body;
+    const { isApproved } = req.body;
     
-    const certificate = await TransferCertificate.findById(req.params.id);
-    if (!certificate) {
-      return res.status(404).json({ message: 'Transfer certificate not found' });
+    const alumni = await Alumni.findByIdAndUpdate(
+      req.params.id,
+      { isApproved },
+      { new: true }
+    );
+    
+    if (!alumni) {
+      return res.status(404).json({ message: 'Alumni not found' });
     }
     
-    // If PDF is being updated, delete the old one
-    if (pdfId && certificate.pdfId.toString() !== pdfId) {
-      await PDF.findByIdAndDelete(certificate.pdfId);
-    }
-    
-    certificate.name = name || certificate.name;
-    certificate.startYear = startYear ? parseInt(startYear) : certificate.startYear;
-    certificate.endYear = endYear ? parseInt(endYear) : certificate.endYear;
-    
-    if (pdfId) {
-      certificate.pdfId = pdfId;
-      certificate.filename = filename;
-      certificate.originalName = originalName;
-    }
-    
-    await certificate.save();
-    
-    res.json(certificate);
+    res.json(alumni);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Delete transfer certificate
-app.delete('/api/transfer-certificates/:id', authenticateToken, async (req, res) => {
+// Delete alumni
+app.delete('/api/alumni/:id', authenticateToken, async (req, res) => {
   try {
-    const certificate = await TransferCertificate.findById(req.params.id);
-    if (!certificate) {
-      return res.status(404).json({ message: 'Transfer certificate not found' });
+    const alumni = await Alumni.findByIdAndDelete(req.params.id);
+    
+    if (!alumni) {
+      return res.status(404).json({ message: 'Alumni not found' });
     }
     
-    // Delete the associated PDF
-    await PDF.findByIdAndDelete(certificate.pdfId);
-    
-    // Delete the certificate record
-    await TransferCertificate.findByIdAndDelete(req.params.id);
-    
-    res.json({ message: 'Transfer certificate deleted successfully' });
+    res.json({ message: 'Alumni deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }

@@ -86,13 +86,13 @@ function App() {
                 <Route path="/about/leadership" element={<Leadership />} />
                 <Route path="/about/why-mangala-school" element={<WhyMangalaSchool />} />
                 {/* Other routes */}
-                <Route path="/tc" element={<TransferCertificate />} />
+                {/* <Route path="/tc" element={<TransferCertificate />} /> */}
                 <Route path="/alumni" element={<Alumni />} />
-                <Route path="/admissions" element={<Admission />} />
+                {/* <Route path="/admissions" element={<Admission />} /> */}
                 <Route path="/academic-corner" element={<AcademicCorner />} />
                 <Route path="/gallery" element={<Gallery />} />
                 <Route path="/eventsnews" element={<EventsNews />} />
-                <Route path="/mandatory-public-disclosure" element={<MandatoryPublicDisclosure />} />
+                {/* <Route path="/mandatory-public-disclosure" element={<MandatoryPublicDisclosure />} /> */}
                 <Route path="/notifications-circular" element={<NotificationsCircular />} />
                 <Route path="/contact" element={<Contact />} />
               </Routes>

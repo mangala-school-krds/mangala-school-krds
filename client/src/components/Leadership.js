@@ -251,7 +251,8 @@ const Leadership = () => {
               { key: 'correspondent', title: 'Correspondent', field: 'correspondentMessage', name: 'Shekar Moily Padebettu' },
               { key: 'headmistress', title: 'Headmistress', field: 'headmistressMessage', name: 'Jayalaxmi' },
               { key: 'president', title: 'President', field: 'presidentMessage', name: 'Ashok Moily' },
-              { key: 'secretary', title: 'Secretary', field: 'secretaryMessage', name: 'Veena Ganesh' }
+              { key: 'secretary', title: 'Secretary', field: 'secretaryMessage', name: 'Veena Ganesh' },
+              { key: 'honorarypresident', title: 'Secretary', field: 'honoraryPresidentMessage', name: 'Dr Devaraj K' }
             ].map(({ key, title, field, name }) => (
               <div
                 key={key}
@@ -287,7 +288,7 @@ const Leadership = () => {
             ))}
 
             {/* Temporary Honorary President */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col md:flex-row items-start p-6">
+            {/* <div className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col md:flex-row items-start p-6">
               <div className="flex flex-col items-center mb-4 md:mb-0 md:mr-6 flex-shrink-0">
                 <img
                   src="https://res.cloudinary.com/daja3mrty/image/upload/v1751172668/honorary_president_igej3e.jpg"
@@ -324,7 +325,7 @@ const Leadership = () => {
                   Read More
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>
