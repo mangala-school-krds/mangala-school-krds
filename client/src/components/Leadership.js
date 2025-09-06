@@ -231,9 +231,217 @@
 
 // export default Leadership;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// src/components/Leadership.js
+// import React, { useState, useEffect } from 'react';
+// import axios from 'axios';
+
+// const Leadership = () => {
+//   const [content, setContent] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState('');
+//   const [expandedCard, setExpandedCard] = useState(null);
+//   const [showModal, setShowModal] = useState(false);
+//   const [modalContent, setModalContent] = useState({ title: '', message: '', name: '' });
+
+//   useEffect(() => {
+//     fetchContent();
+//   }, []);
+
+//   const fetchContent = async () => {
+//     try {
+//       const response = await axios.get('/api/content');
+//       setContent(response.data);
+//       setLoading(false);
+//     } catch (error) {
+//       console.error('Error fetching content:', error);
+//       setError('Failed to load content. Please try again later.');
+//       setLoading(false);
+//     }
+//   };
+
+//   const getImageUrl = (imageData) => {
+//     if (!imageData || !imageData.imageId) return null;
+//     return `/api/image/${imageData.imageId}`;
+//   };
+
+//   const truncateText = (text, wordLimit = 25) => {
+//     if (!text) return '';
+//     const words = text.split(' ');
+//     if (words.length <= wordLimit) return text;
+//     return words.slice(0, wordLimit).join(' ') + '...';
+//   };
+
+//   const openModal = (title, message, name) => {
+//     setModalContent({ title, message, name });
+//     setShowModal(true);
+//   };
+
+//   const closeModal = () => {
+//     setShowModal(false);
+//     setModalContent({ title: '', message: '', name: '' });
+//   };
+
+//   if (loading) {
+//     return (
+//       <div className="flex flex-col items-center justify-center h-screen text-gray-700">
+//         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
+//         <p>Loading...</p>
+//       </div>
+//     );
+//   }
+
+//   if (error) {
+//     return (
+//       <div className="flex flex-col items-center justify-center h-screen text-center px-4">
+//         <h2 className="text-2xl font-bold text-red-600 mb-2">Error</h2>
+//         <p className="text-gray-700 mb-4">{error}</p>
+//         <button
+//           onClick={fetchContent}
+//           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+//         >
+//           Retry
+//         </button>
+//       </div>
+//     );
+//   }
+
+//   if (!content) {
+//     return (
+//       <div className="flex flex-col items-center justify-center h-screen text-center px-4">
+//         <h2 className="text-2xl font-bold text-gray-800 mb-2">No Content Available</h2>
+//         <p className="text-gray-600">Please check back later.</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="flex flex-col min-h-screen font-sans">
+//       {/* Hero section */}
+//       <section className="bg-gradient-to-r from-blue-800 to-purple-700 text-white py-20 text-center">
+//         <div className="container mx-auto px-4">
+//           <h1 className="text-4xl font-bold mb-2">Our Leadership</h1>
+//           <p className="text-lg">Inspiring Excellence Through Visionary Leadership</p>
+//         </div>
+//       </section>
+
+//       {/* Leadership Section with Background */}
+//       <section
+//         className="py-20 bg-cover bg-center bg-no-repeat"
+//         style={{ backgroundImage: "url('../assets/background.jpg')" }}
+//       >
+//         <div className="container mx-auto px-4 max-w-6xl text-white">
+//           <h2 className="text-4xl font-bold text-center mb-12">Our Leaders</h2>
+//           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+//             {[
+//               { key: 'president', title: 'President', field: 'presidentMessage', name: 'Ashok Moily' },
+//               { key: 'secretary', title: 'Secretary', field: 'secretaryMessage', name: 'Veena Ganesh' },
+//               { key: 'correspondent', title: 'Correspondent', field: 'correspondentMessage', name: 'Shekar Moily Padebettu' },
+//               { key: 'headmistress', title: 'Principal', field: 'headmistressMessage', name: 'Jayalaxmi' },
+//               { key: 'honoraryPresident', title: 'Honorary President', field: 'honoraryPresidentMessage', name: 'Dr Devaraj K' },
+//             ].map(({ key, title, field, name }) => (
+//               <div
+//                 key={key}
+//                 className="bg-white rounded-xl shadow-xl overflow-hidden p-6 flex flex-col items-center text-center"
+//               >
+//                 {content[`${key}Image`] && (
+//                   <img
+//                     src={getImageUrl(content[`${key}Image`])}
+//                     alt={title}
+//                     className="w-28 h-28 object-cover rounded-full border-4 border-blue-600 mb-4"
+//                   />
+//                 )}
+//                 <h3 className="text-xl font-semibold text-blue-700 mb-1">{title}'s Message</h3>
+//                 <p className="text-sm font-medium text-gray-700 mb-2">{name}</p>
+//                 <p className="text-gray-700 text-sm mb-4">{truncateText(content[field])}</p>
+//                 {content[field] && content[field].split(' ').length > 25 && (
+//                   <button
+//                     onClick={() => openModal(title, content[field], name)}
+//                     className="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700 transition"
+//                   >
+//                     Read More
+//                   </button>
+//                 )}
+//               </div>
+//             ))}
+//           </div>
+//         </div>
+//       </section>
+
+
+//       {/* Leadership Philosophy */}
+//       <section className="bg-white py-16">
+//         <div className="container mx-auto px-4 max-w-4xl">
+//           <div className="bg-gray-100 p-8 rounded-xl shadow-lg">
+//             <h2 className="text-2xl font-bold text-blue-800 mb-4">Leadership Philosophy</h2>
+//             <p className="text-gray-700 leading-relaxed">
+//               Our leadership team believes in collaborative governance and shared vision. Each member brings unique
+//               expertise and perspective, working together to ensure that Mangala School continues to be a beacon of
+//               educational excellence. We are committed to fostering an environment where innovation thrives and every
+//               stakeholder feels empowered to contribute to our mission.
+//             </p>
+//           </div>
+//         </div>
+//       </section>
+
+//       {/* Modal */}
+//       {showModal && (
+//         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+//           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-hidden">
+//             <div className="flex justify-between items-center p-6 border-b">
+//               <div>
+//                 <h2 className="text-xl font-bold text-blue-800">{modalContent.title}'s Message</h2>
+//                 <p className="text-sm text-gray-600 mt-1">{modalContent.name}</p>
+//               </div>
+//               <button
+//                 onClick={closeModal}
+//                 className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+//               >
+//                 ×
+//               </button>
+//             </div>
+//             <div className="p-6 overflow-y-auto max-h-[60vh]">
+//               <p className="text-gray-700 leading-relaxed">{modalContent.message}</p>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default Leadership;
+
+
+
+
+
+
 // src/components/Leadership.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import backgroundImg from '../assets/background.jpg';
+import harishSherigar from '../assets/harishsherigar.jpg'
 
 const Leadership = () => {
   const [content, setContent] = useState(null);
@@ -281,6 +489,11 @@ const Leadership = () => {
     setModalContent({ title: '', message: '', name: '' });
   };
 
+  // Static data for Harish Sherigar
+  const harishSherigarMessage = `It gives me immense pride to be associated with the Karnataka Rajya Devadigara Sangha (R), Mangalore, in its noble endeavor of nurturing education and shaping young minds through our school. Education is the most powerful tool to empower individuals and uplift communities, and our Sangha has always believed in providing opportunities that build a strong foundation for the future.
+The school managed by the Sangha is not just an institution of learning, but a temple of knowledge, values, and character. Here, we aim to foster academic excellence, discipline, and cultural pride, while preparing our students to face the challenges of tomorrow with confidence and integrity.
+As we celebrate the centenary of our Sangha, I take this opportunity to reaffirm our commitment to serve society through quality education. I extend my best wishes to the Principal, teachers, staff, students, and parents who are all partners in this journey of progress.`;
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-screen text-gray-700">
@@ -327,7 +540,7 @@ const Leadership = () => {
       {/* Leadership Section with Background */}
       <section
         className="py-20 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('../assets/background.jpg')" }}
+        style={{ backgroundImage: `url(${backgroundImg})` }}
       >
         <div className="container mx-auto px-4 max-w-6xl text-white">
           <h2 className="text-4xl font-bold text-center mb-12">Our Leaders</h2>
@@ -363,10 +576,27 @@ const Leadership = () => {
                 )}
               </div>
             ))}
+
+            {/* Harish Sherigar - Static Entry */}
+            <div className="bg-white rounded-xl shadow-xl overflow-hidden p-6 flex flex-col items-center text-center">
+              <img
+                src={harishSherigar}
+                alt="Honorary President, Centenary Celebration Committee"
+                className="w-28 h-28 object-cover rounded-full border-4 border-blue-600 mb-4"
+              />
+              <h3 className="text-xl font-semibold text-blue-700 mb-1">Honorary President, Centenary Celebration Committee</h3>
+              <p className="text-sm font-medium text-gray-700 mb-2">Harish Sherigar</p>
+              <p className="text-gray-700 text-sm mb-4">{truncateText(harishSherigarMessage)}</p>
+              <button
+                onClick={() => openModal('Honorary President, Centenary Celebration Committee', harishSherigarMessage, 'Harish Sherigar')}
+                className="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700 transition"
+              >
+                Read More
+              </button>
+            </div>
           </div>
         </div>
       </section>
-
 
       {/* Leadership Philosophy */}
       <section className="bg-white py-16">
