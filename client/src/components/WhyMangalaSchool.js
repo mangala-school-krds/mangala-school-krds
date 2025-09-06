@@ -199,35 +199,23 @@ const WhyMangalaSchool = () => {
           {[
             {
               title: 'Academic Excellence',
-              text: 'At Mangala School, we maintain the highest academic standards with a curriculum designed to challenge and inspire students. Our experienced faculty uses innovative teaching methodologies to ensure deep understanding and critical thinking skills development. We consistently achieve outstanding results in board examinations and competitive entrance tests.'
+              text: 'At Mangala School, we maintain the highest academic standards with a curriculum designed to challenge and inspire students.'
             },
             {
               title: 'Holistic Development',
-              text: 'We believe in nurturing the complete personality of each child. Our comprehensive approach includes academics, sports, arts, music, and character building activities. Students participate in various clubs, competitions, and community service programs that develop leadership skills and social responsibility.'
-            },
-            {
-              title: 'State-of-the-Art Facilities',
-              text: 'Our campus features modern classrooms equipped with smart boards, well-equipped science and computer laboratories, a comprehensive library, sports facilities, and dedicated spaces for arts and crafts. These facilities provide an optimal learning environment that supports both traditional and digital learning approaches.'
+              text: 'We believe in nurturing the complete personality of each child.'
             },
             {
               title: 'Experienced Faculty',
-              text: 'Our teaching staff comprises highly qualified and experienced educators who are passionate about their subjects and committed to student success. They undergo regular professional development to stay updated with the latest educational trends and teaching methodologies.'
+              text: 'Our teaching staff comprises highly qualified and experienced educators who are passionate about their subjects and committed to student success.'
             },
             {
               title: 'Individual Attention',
-              text: 'With optimal student-teacher ratios, we ensure that each child receives personalized attention. Our teachers identify individual learning styles and provide customized support to help every student reach their full potential. Regular parent-teacher interactions keep families engaged in their child\'s educational journey.'
-            },
-            {
-              title: 'Strong Alumni Network',
-              text: 'Our graduates have gone on to excel in various fields including medicine, engineering, business, arts, and public service. Our strong alumni network provides mentorship opportunities and career guidance to current students, creating a supportive community that extends beyond graduation.'
+              text: 'With optimal student-teacher ratios, we ensure that each child receives personalized attention. '
             },
             {
               title: 'Values-Based Education',
               text: 'We integrate moral and ethical values into our curriculum, helping students develop strong character and integrity. Our approach ensures that academic success is balanced with personal growth and social responsibility, preparing students to be compassionate leaders in their communities.'
-            },
-            {
-              title: 'Innovation and Technology',
-              text: 'We embrace educational technology to enhance learning experiences. From interactive digital content to online learning platforms, we prepare our students for the digital age while maintaining the importance of human connection and traditional values in education.'
             }
           ].map(({ title, text }, index) => (
             <div key={index} className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300">
