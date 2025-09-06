@@ -213,14 +213,15 @@ const Contact = () => {
               <h3 className="font-medium">📍 Address</h3>
               <p>
                 Mangala English Medium School<br />
-                MannaGudda, Gandhinagar<br />
-                Mangalore 575003<br />
-                India
+                <p className='font-[0.5rem]'>(Managed by Karnataka Rajya Devadigara Sangha® Mangalore) </p><br/>
+                Devadiga Samaja Bhavana  Mannagudda,<br />
+                Gandhinagar,<br />
+                Mangalore - 575003
               </p>
             </div>
             <div>
               <h3 className="font-medium">📞 Phone</h3>
-              <p>+91 80500 29606<br />0824-2455296</p>
+              <p>+91-8050029606<br />0824-2455296</p>
             </div>
             <div>
               <h3 className="font-medium">✉️ Email</h3>
@@ -228,7 +229,7 @@ const Contact = () => {
             </div>
             <div>
               <h3 className="font-medium">🕒 Office Hours</h3>
-              <p>Mon–Fri: 8:00 AM – 4:00 PM<br />Sat: 9:00 AM – 1:00 PM<br />Sun: Closed</p>
+              <p>Mon–Sat: 9:00 AM – 4:30 PM</p>
             </div>
           </div>
         </section>

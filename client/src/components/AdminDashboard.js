@@ -7,6 +7,14 @@ const AdminDashboard = () => {
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [newNotification, setNewNotification] = useState({ 
+    title: '', 
+    date: '' 
+  });
+  const [notificationPdfFile, setNotificationPdfFile] = useState(null);
+  const [editingNotification, setEditingNotification] = useState(null);
+  const [loadingNotifications, setLoadingNotifications] = useState(false);
   const [newEvent, setNewEvent] = useState({ 
     title: '', 
     description: '', 
@@ -46,6 +54,7 @@ const AdminDashboard = () => {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     fetchContent();
     fetchAlumni();
+    fetchNotifications();
   }, [navigate]);
 
   const fetchContent = async () => {
@@ -385,6 +394,108 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('Error deleting home gallery item:', error);
       alert('Failed to delete home gallery item');
+    }
+  };
+
+  const fetchNotifications = async () => {
+    setLoadingNotifications(true);
+    try {
+      const response = await axios.get('/api/admin/notifications');
+      setNotifications(response.data);
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      setError('Failed to load notifications');
+    } finally {
+      setLoadingNotifications(false);
+    }
+  };
+
+  const uploadPDF = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await axios.post('/api/upload-pdf', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error uploading PDF:', error);
+      throw error;
+    }
+  };
+
+  const addNotification = async () => {
+    if (!newNotification.title || !newNotification.date || !notificationPdfFile) {
+      alert('Please fill all required fields (title, date, and PDF file)');
+      return;
+    }
+
+    try {
+      const uploadResponse = await uploadPDF(notificationPdfFile);
+      const notificationData = {
+        ...newNotification,
+        pdfId: uploadResponse.pdfId,
+        filename: uploadResponse.filename,
+        originalName: uploadResponse.originalName
+      };
+
+      await axios.post('/api/notifications', notificationData);
+      fetchNotifications(); // Refresh the list
+      setNewNotification({ title: '', date: '' });
+      setNotificationPdfFile(null);
+      
+      // Reset file input
+      const fileInput = document.getElementById('notificationPdfUpload');
+      if (fileInput) fileInput.value = '';
+    } catch (error) {
+      console.error('Error adding notification:', error);
+      alert('Failed to add notification');
+    }
+  };
+
+  const updateNotification = async () => {
+    if (!editingNotification.title || !editingNotification.date) {
+      alert('Please fill all required fields (title and date)');
+      return;
+    }
+
+    try {
+      let notificationData = { ...editingNotification };
+      
+      // Upload new PDF if provided
+      if (notificationPdfFile) {
+        const uploadResponse = await uploadPDF(notificationPdfFile);
+        notificationData.pdfId = uploadResponse.pdfId;
+        notificationData.filename = uploadResponse.filename;
+        notificationData.originalName = uploadResponse.originalName;
+      }
+
+      await axios.put(`/api/notifications/${editingNotification._id}`, notificationData);
+      fetchNotifications(); // Refresh the list
+      setEditingNotification(null);
+      setNotificationPdfFile(null);
+      
+      // Reset file input
+      const fileInput = document.getElementById('editNotificationPdfUpload');
+      if (fileInput) fileInput.value = '';
+    } catch (error) {
+      console.error('Error updating notification:', error);
+      alert('Failed to update notification');
+    }
+  };
+
+  const deleteNotification = async (notificationId) => {
+    if (!window.confirm('Are you sure you want to delete this notification?')) return;
+
+    try {
+      await axios.delete(`/api/notifications/${notificationId}`);
+      fetchNotifications(); // Refresh the list
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+      alert('Failed to delete notification');
     }
   };
 
@@ -1198,6 +1309,159 @@ const AdminDashboard = () => {
                 ))
               ) : (
                 <p className="text-gray-600 text-center py-8">No alumni registrations yet</p>
+              )}
+            </div>
+          )}
+        </section>
+
+        {/* Notifications/Circulars Section */}
+        <section className="bg-white rounded-lg shadow-md p-6 mt-8">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Notifications/Circulars Management</h2>
+          
+          {/* Add Notification Form */}
+          <div className="bg-gray-50 rounded-lg p-6 mb-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Add New Notification</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <input
+                type="text"
+                placeholder="Notification Title *"
+                value={newNotification.title}
+                onChange={(e) => setNewNotification({...newNotification, title: e.target.value})}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="date"
+                value={newNotification.date}
+                onChange={(e) => setNewNotification({...newNotification, date: e.target.value})}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="flex flex-wrap gap-4 items-center">
+              <input
+                type="file"
+                accept=".pdf"
+                onChange={(e) => setNotificationPdfFile(e.target.files[0])}
+                id="notificationPdfUpload"
+                className="hidden"
+              />
+              <label 
+                htmlFor="notificationPdfUpload"
+                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors cursor-pointer"
+              >
+                Choose PDF File *
+              </label>
+              {notificationPdfFile && (
+                <span className="text-sm text-gray-600">{notificationPdfFile.name}</span>
+              )}
+              <button 
+                onClick={addNotification}
+                className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
+              >
+                Add Notification
+              </button>
+            </div>
+          </div>
+
+          {/* Notifications List */}
+          {loadingNotifications ? (
+            <div className="text-center py-8">
+              <div className="text-lg text-gray-600">Loading notifications...</div>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {notifications && notifications.length > 0 ? (
+                notifications.map((notification, index) => (
+                  <div key={notification._id || index} className="border border-gray-200 rounded-lg p-6">
+                    {editingNotification && editingNotification._id === notification._id ? (
+                      // Edit Form
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <input
+                            type="text"
+                            value={editingNotification.title}
+                            onChange={(e) => setEditingNotification({...editingNotification, title: e.target.value})}
+                            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                          <input
+                            type="date"
+                            value={editingNotification.date ? editingNotification.date.split('T')[0] : ''}
+                            onChange={(e) => setEditingNotification({...editingNotification, date: e.target.value})}
+                            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+                        <div className="flex flex-wrap gap-4 items-center">
+                          <input
+                            type="file"
+                            accept=".pdf"
+                            onChange={(e) => setNotificationPdfFile(e.target.files[0])}
+                            id="editNotificationPdfUpload"
+                            className="hidden"
+                          />
+                          <label 
+                            htmlFor="editNotificationPdfUpload"
+                            className="bg-green-600 text-white px-3 py-1 rounded-md hover:bg-green-700 transition-colors cursor-pointer text-sm"
+                          >
+                            Change PDF
+                          </label>
+                          {notificationPdfFile && (
+                            <span className="text-sm text-gray-600">{notificationPdfFile.name}</span>
+                          )}
+                          <button 
+                            onClick={updateNotification}
+                            className="bg-blue-600 text-white px-4 py-1 rounded-md text-sm hover:bg-blue-700 transition-colors"
+                          >
+                            Save Changes
+                          </button>
+                          <button 
+                            onClick={() => {
+                              setEditingNotification(null);
+                              setNotificationPdfFile(null);
+                            }}
+                            className="bg-gray-600 text-white px-4 py-1 rounded-md text-sm hover:bg-gray-700 transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      // Display Notification
+                      <div className="flex flex-col lg:flex-row gap-6">
+                        <div className="flex-1">
+                          <h3 className="text-xl font-medium text-gray-900 mb-2">{notification.title}</h3>
+                          <div className="text-sm text-gray-600 mb-2 space-y-1">
+                            <div>📅 {new Date(notification.date).toLocaleDateString()}</div>
+                            <div>📄 {notification.originalName}</div>
+                            <div>📤 Uploaded: {new Date(notification.uploadDate).toLocaleDateString()}</div>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            
+                            <a href={`/api/pdf/${notification.pdfId}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="bg-green-600 text-white px-3 py-1 rounded-md text-sm hover:bg-green-700 transition-colors"
+                            >
+                              View PDF
+                            </a>
+                            <button 
+                              onClick={() => setEditingNotification(notification)}
+                              className="bg-blue-600 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-700 transition-colors"
+                            >
+                              Edit
+                            </button>
+                            <button 
+                              onClick={() => deleteNotification(notification._id)}
+                              className="bg-red-600 text-white px-3 py-1 rounded-md text-sm hover:bg-red-700 transition-colors"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-600 text-center py-8">No notifications available</p>
               )}
             </div>
           )}

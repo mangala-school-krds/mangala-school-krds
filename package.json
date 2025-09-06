@@ -1,0 +1,6 @@
+{
+    "scripts" : {
+        "start" : "cd client && npm run build && cd .. && docker-compose up --build -d",
+        "stop" : "docker-compose down --remove-orphans -v"
+    }
+}

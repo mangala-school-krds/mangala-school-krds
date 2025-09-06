@@ -174,33 +174,33 @@ const AboutMangalaSchool = () => {
           <div className="bg-white p-8 rounded-xl shadow-lg">
             <h2 className="text-2xl font-semibold text-blue-800 mb-4">About Us</h2>
             <p className="text-gray-700 leading-relaxed mb-4">
-              Mangala School is a co-education school that embraces students from all walks of life and backgrounds. We work in close partnership with students to develop their full potential for life and work.
+              Mangala School was founded with a mission to empower children from all backgrounds through holistic and value-based education. We are proudly managed by Karnataka Rajya Devadigara Sangha® Mangalore, an organization committed to social upliftment and educational service.
             </p>
-            <p className="text-gray-700 leading-relaxed">
+            {/* <p className="text-gray-700 leading-relaxed">
               Our school is committed to providing a nurturing environment where every child can thrive academically, socially, and emotionally. With state-of-the-art facilities and a dedicated faculty, we ensure our students are well-prepared for the challenges of tomorrow.
-            </p>
+            </p> */}
           </div>
 
           <div className="bg-white p-8 rounded-xl shadow-lg">
             <h2 className="text-2xl font-semibold text-blue-800 mb-4">Our Vision</h2>
             <p className="text-gray-700 leading-relaxed">
-              We strive to strengthen the inner person of the child to help them become confident, skilled, and empathetic citizens. Our vision is to nurture global citizens who excel academically and possess strong moral values.
+              To provide accessible and quality education rooted in Indian values and culture.
             </p>
           </div>
 
           <div className="bg-white p-8 rounded-xl shadow-lg">
             <h2 className="text-2xl font-semibold text-blue-800 mb-4">Our Mission</h2>
             <p className="text-gray-700 leading-relaxed">
-              Our mission is to provide quality education that fosters creativity, critical thinking, and character. We aim to create an inclusive learning environment that empowers every student to reach their full potential.
+              To develop confident, curious, and compassionate learners through effective teaching and community involvement.
             </p>
           </div>
 
-          <div className="bg-white p-8 rounded-xl shadow-lg">
+          {/* <div className="bg-white p-8 rounded-xl shadow-lg">
             <h2 className="text-2xl font-semibold text-blue-800 mb-4">Our Values</h2>
             <p className="text-gray-700 leading-relaxed">
               Integrity, excellence, respect, and compassion form the foundation of Mangala School. These values guide our educational approach and help build responsible, ethical leaders for the future.
             </p>
-          </div>
+          </div> */}
 
         </div>
       </section>

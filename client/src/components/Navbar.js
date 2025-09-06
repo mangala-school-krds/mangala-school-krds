@@ -177,7 +177,7 @@ const Navbar = () => {
     },
     // { path: '/tc', label: 'T.C.' },
     { path: '/alumni', label: 'Alumni' },
-    // { path: '/admissions', label: 'Admissions' },
+    { path: '/admissions', label: 'Admissions' },
     { path: '/academic-corner', label: 'Academic Corner' },
     { path: '/gallery', label: 'Gallery' },
     { path: '/eventsnews', label: 'Events & News' },

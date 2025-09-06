@@ -88,7 +88,7 @@ function App() {
                 {/* Other routes */}
                 {/* <Route path="/tc" element={<TransferCertificate />} /> */}
                 <Route path="/alumni" element={<Alumni />} />
-                {/* <Route path="/admissions" element={<Admission />} /> */}
+                <Route path="/admissions" element={<Admission />} />
                 <Route path="/academic-corner" element={<AcademicCorner />} />
                 <Route path="/gallery" element={<Gallery />} />
                 <Route path="/eventsnews" element={<EventsNews />} />

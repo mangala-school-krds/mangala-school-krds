@@ -89,9 +89,9 @@ const Footer = () => {
         <div>
           <h2 className="text-2xl font-bold mb-2">Mangala English Medium School</h2>
           <p className="text-sm leading-relaxed">
-            MannaGudda, Gandhinagar,<br />
-            Mangalore - 575003, Karnataka, India<br />
-            Office Phone: 8050029606, 0824-2455296<br />
+            Devadiga Samaja Bhavana  Mannagudda,<br />
+            Gandhinagar, Mangalore - 575003, Karnataka, India<br />
+            Office Phone: +91-8050029606 , 0824-2455296<br />
             Email: <a href="mailto:mangalahighschool2014@gmail.com" className="underline hover:text-gray-200">
               mangalahighschool2014@gmail.com
             </a>
@@ -103,7 +103,7 @@ const Footer = () => {
           <h3 className="text-lg font-semibold mb-2">ADMISSIONS</h3>
           <p>
             <a href="mailto:mangalahighschool2014@gmail.com" className="underline hover:text-gray-200">
-              mangalahighschool2014@gmail.com
+              admissions@mangalaschool.in
             </a>
           </p>
           <h3 className="text-lg font-semibold mt-4 mb-2">FEEDBACK/SUGGESTIONS</h3>
@@ -118,14 +118,14 @@ const Footer = () => {
         <div>
           <h3 className="text-lg font-semibold mb-2">QUICK LINKS</h3>
           <div className="grid grid-cols-2 gap-2 text-sm">
-            <Link to="/about" className="hover:underline">About Us</Link>
-            <Link to="/news" className="hover:underline">News</Link>
+            <Link to="/about/mangala-school" className="hover:underline">About Us</Link>
+            <Link to="/eventsnews" className="hover:underline">News & Events</Link>
             <Link to="/academic-corner" className="hover:underline">Academics</Link>
-            <Link to="/gallery" className="hover:underline">Events Gallery</Link>
-            <Link to="/admissions" className="hover:underline">Admission</Link>
+            <Link to="/gallery" className="hover:underline">Gallery</Link>
+            <Link to="/academic-corner" className="hover:underline">Admission</Link>
             <Link to="/contact" className="hover:underline">Contact Us</Link>
             <Link to="/notifications-circular" className="hover:underline">Circular</Link>
-            <Link to="/mandatory-public-disclosure" className="hover:underline">Annual Reports</Link>
+            {/* <Link to="/mandatory-public-disclosure" className="hover:underline">Annual Reports</Link> */}
           </div>
         </div>
       </div>
@@ -133,7 +133,7 @@ const Footer = () => {
       {/* Bottom bar */}
       <div className="flex flex-col md:flex-row justify-between items-center px-6 py-4 text-sm text-white/80 bg-black/10">
         <div className="mb-2 md:mb-0">
-          © Mangala English Medium School, 2024 | 
+          Mangala English Medium School, 2025 | 
           <Link to="/privacy" className="ml-2 hover:underline">Privacy Policy</Link> | 
           <Link to="/disclaimer" className="ml-2 hover:underline">Disclaimer</Link> | 
           <Link to="/sitemap" className="ml-2 hover:underline">Sitemap</Link>

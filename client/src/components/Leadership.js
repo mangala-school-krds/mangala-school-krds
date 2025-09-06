@@ -324,54 +324,49 @@ const Leadership = () => {
         </div>
       </section>
 
-      {/* Leadership Cards */}
-      <section className="bg-gray-100 py-16">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <h2 className="text-3xl font-bold text-center text-blue-800 mb-12">Leadership Messages</h2>
-          <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
-            {/* Dynamic leaders */}
+      {/* Leadership Section with Background */}
+      <section
+        className="py-20 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('../assets/background.jpg')" }}
+      >
+        <div className="container mx-auto px-4 max-w-6xl text-white">
+          <h2 className="text-4xl font-bold text-center mb-12">Our Leaders</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
             {[
-              { key: 'correspondent', title: 'Correspondent', field: 'correspondentMessage', name: 'Shekar Moily Padebettu' },
-              { key: 'headmistress', title: 'Headmistress', field: 'headmistressMessage', name: 'Jayalaxmi' },
               { key: 'president', title: 'President', field: 'presidentMessage', name: 'Ashok Moily' },
               { key: 'secretary', title: 'Secretary', field: 'secretaryMessage', name: 'Veena Ganesh' },
-              { key: 'honoraryPresident', title: 'Honorary President', field: 'honoraryPresidentMessage', name: 'Dr Devaraj K' }
+              { key: 'correspondent', title: 'Correspondent', field: 'correspondentMessage', name: 'Shekar Moily Padebettu' },
+              { key: 'headmistress', title: 'Principal', field: 'headmistressMessage', name: 'Jayalaxmi' },
+              { key: 'honoraryPresident', title: 'Honorary President', field: 'honoraryPresidentMessage', name: 'Dr Devaraj K' },
             ].map(({ key, title, field, name }) => (
               <div
                 key={key}
-                className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col md:flex-row items-start p-6"
+                className="bg-white rounded-xl shadow-xl overflow-hidden p-6 flex flex-col items-center text-center"
               >
-                <div className="flex flex-col items-center mb-4 md:mb-0 md:mr-6 flex-shrink-0">
-                  {content[`${key}Image`] && (
-                    <img
-                      src={getImageUrl(content[`${key}Image`])}
-                      alt={title}
-                      className="w-32 h-32 object-cover rounded-full border-4 border-blue-600"
-                    />
-                  )}
-                  <p className="text-sm font-medium text-gray-800 mt-2 text-center max-w-32 break-words">
-                    {name}
-                  </p>
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-blue-700 mb-2">{title}'s Message</h3>
-                  <p className="text-gray-700 leading-relaxed text-sm mb-3">
-                    {truncateText(content[field])}
-                  </p>
-                  {content[field] && content[field].split(' ').length > 25 && (
-                    <button
-                      onClick={() => openModal(title, content[field], name)}
-                      className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
-                    >
-                      Read More
-                    </button>
-                  )}
-                </div>
+                {content[`${key}Image`] && (
+                  <img
+                    src={getImageUrl(content[`${key}Image`])}
+                    alt={title}
+                    className="w-28 h-28 object-cover rounded-full border-4 border-blue-600 mb-4"
+                  />
+                )}
+                <h3 className="text-xl font-semibold text-blue-700 mb-1">{title}'s Message</h3>
+                <p className="text-sm font-medium text-gray-700 mb-2">{name}</p>
+                <p className="text-gray-700 text-sm mb-4">{truncateText(content[field])}</p>
+                {content[field] && content[field].split(' ').length > 25 && (
+                  <button
+                    onClick={() => openModal(title, content[field], name)}
+                    className="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700 transition"
+                  >
+                    Read More
+                  </button>
+                )}
               </div>
             ))}
           </div>
         </div>
       </section>
+
 
       {/* Leadership Philosophy */}
       <section className="bg-white py-16">

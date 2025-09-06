@@ -101,8 +101,8 @@ const Gallery = () => {
   return (
     <div className="px-6 py-10 max-w-7xl mx-auto">
       <div className="text-center mb-10">
-        <h1 className="text-4xl font-bold mb-2 text-gray-800">School Gallery</h1>
-        <p className="text-gray-600">Capturing memorable moments from our school community</p>
+        <h1 className="text-4xl font-bold mb-2 text-gray-800">Gallery</h1>
+        <p className="text-gray-600">From classroom learning to cultural celebrations, sports events to science exhibitions – Mangala School is alive with joyful learning.</p>
         {galleryItems.length > 0 && (
           <p className="text-sm text-gray-500 mt-2">{galleryItems.length} {galleryItems.length === 1 ? 'photo' : 'photos'}</p>
         )}
