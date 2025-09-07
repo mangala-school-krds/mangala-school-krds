@@ -137,20 +137,19 @@ const HomePage = () => {
   if (error) return <div className="text-red-500 text-center py-10">{error}</div>;
   if (!content) return <div className="text-center py-10">No content available</div>;
 
-  console.log(process.env.REACT_APP_API_URL);
 
   return (
     <div className="min-h-screen font-sans">
       {/* Fullscreen Auto-scrolling Gallery */}
       {content.homegallery?.length > 0 && (
-        <section className="relative w-full overflow-hidden h-[90vh]">
+        <section className="relative w-full overflow-hidden h-[30vh] md:h-[60vh] lg:h-[70vh]">
           <div className="absolute animate-scroll flex w-max">
             {[...content.homegallery, ...content.homegallery].map((item, index) => (
               <img
                 key={index}
                 src={getImageUrl(item)}
                 alt={item.caption || `Gallery ${index}`}
-                className="h-[90vh] w-auto object-cover"
+                className="h-[30vh] md:h-[60vh] lg:h-[70vh] w-auto max-w-[80vw] md:max-w-none object-cover"
               />
             ))}
           </div>
