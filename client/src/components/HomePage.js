@@ -164,15 +164,15 @@ const HomePage = () => {
         <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="bg-blue-900 bg-opacity-80 p-6 rounded-xl shadow-lg">
             <h2 className="text-2xl font-bold mb-2">About Us</h2>
-            <p>Madhava Kripa School is a co-educational school embracing students from all walks of life...</p>
+            <p>Mangala School was founded with a mission to empower children from all backgrounds through holistic and value-based education. </p>
           </div>
           <div className="bg-orange-600 bg-opacity-90 p-6 rounded-xl shadow-lg">
             <h2 className="text-2xl font-bold mb-2">Our Vision</h2>
-            <p>We strive to strengthen the inner person of the child to help them serve the world with confidence...</p>
+            <p>To provide accessible and quality education rooted in Indian values and culture.</p>
           </div>
           <div className="bg-purple-700 bg-opacity-90 p-6 rounded-xl shadow-lg">
             <h2 className="text-2xl font-bold mb-2">Our Mission</h2>
-            <p>Inspire students to reach their potential. Instill values of compassion and universal brotherhood.</p>
+            <p>To develop confident, curious, and compassionate learners through effective teaching and community involvement.</p>
           </div>
         </div>
       </section>
